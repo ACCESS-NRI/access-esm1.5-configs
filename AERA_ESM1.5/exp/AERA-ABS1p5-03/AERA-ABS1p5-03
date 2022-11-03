@@ -6,7 +6,7 @@
 # Things worth adjusting for different runs:
 # PBS options, especially number of nodes, PEs and cpu time
 # JOBDIR - src of files controling UM execution and STASH, defined in ACCESS_INIT
-#          it is used by UMScr_TopLevel to copy these files from 
+#          it is used by UMScr_TopLevel to copy these files from
 # UM_NPES - number of PEs for UM, currently only 1 supported
 # UM_ATM_NPROCX=1 - number of PEs for UM, grid decomposition
 # UM_ATM_NPROCY=1   currently only 1 supported, nprocx*nprocy==npes
@@ -22,22 +22,23 @@
 #
 #PBS -P p66
 #PBS -l mem=288gb
-#PBS -l walltime=03:30:00    
+#PBS -l walltime=02:30:00
 
-###Sandybridge
-##PBS -q normal
-##PBS -l ncpus=288
+###cascade lake
+#PBS -q normal
+#PBS -l ncpus=384
+#PBS -l storage=scratch/p66+scratch/access+gdata/p66+gdata/access
 
-###Broadwell 
-#PBS -q normalbw
-#PBS -l ncpus=308
-
+###Broadwell
+##PBS -q normalbw
+##PBS -l ncpus=308
 
 set -x
 set -e
 
 # path to openmpi 1.6.5 libs
-export LD_LIBRARY_PATH=/apps/openmpi/1.6.5/lib/Intel:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=/apps/openmpi/1.6.5/lib/Intel:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/apps/openmpi/4.0.2/lib:$LD_LIBRARY_PATH
 
 #export OMPI_MCA_hwloc_base_mem_alloc_policy=local_only
 export SPEED_TEST=false
@@ -48,25 +49,13 @@ PBS_O_WORKDIR=${PBS_O_WORKDIR:=`pwd`}
 
 echo "Job was submitted from PBS_O_HOST $PBS_O_HOST"
 
-# determine on which system we are running regardles
-# whether job was submitted from fron-end or a
-# compute node (auto restart/continuation jobs)
-if [[ "$PBS_O_HOST" == raijin* || "$PBS_O_HOST" == r*{0,2}(\d) ]] ; then
-        export exec_site="NCI"
-        export exec_system="vayu"
-else
-        echo "Sorry, ACCESS is currently set on NCI platform RAIJIN only. "
-        echo "Please see your IT export for setup in other platforms. "
-        exit
-fi
-
 # calculate dir 2 levels up (UM doesn't allow .. in pathnames)
 tmp=`echo $PBS_O_WORKDIR | tr -d /`
 wctmp=`echo $tmp | wc -m`
 wcwrk=`echo $PBS_O_WORKDIR | wc -m`
 (( up2 = $wcwrk - $wctmp - 1 ))
 export SYSTEMDIR=`echo $PBS_O_WORKDIR | cut -d / -f 1-$up2 `
-export SHORTDIR="/short/p66/$USER"
+export SHORTDIR="/scratch/p66/$USER"
 export WORKDIR="$SHORTDIR/work"
 [ ! -d $WORKDIR ] && mkdir -p $WORKDIR
 [ ! -d $DATADIR ] && mkdir -p $DATADIR
@@ -113,7 +102,7 @@ echo "     	Modified for use with AusCOM + OASIS3"
 echo "*****************************************************************"
 set -x
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-export UMDIR=/projects/access/umdir
+export UMDIR=/g/data/access/projects/access/umdir
 #??? export UMDIR=${UMDIR:=$SHORTDIR/access/v1/umdir}
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -136,11 +125,7 @@ fi
 #PATH=$UMDIR/vn$VN/normal/exec:$PATH
 PATH=~access/umdir/vn7.3/normal/exec:$PATH
 
-if [[ ( $HOSTNAME = "cherax" ) || ( $exec_site = "NCI" ) ]]; then
-  alias banner='/bin/echo'
-else
-  alias banner='/access/bin/figlet -f /access/bin/fonts/banner.flf'
-fi
+alias banner='/bin/echo'
 
 if test -s $UMDIR/vn$VN/$TARGET_MC/cm1scripts/umprofile ; then
    echo "Sourcing $UMDIR/vn$VN/$TARGET_MC/cm1scripts/umprofile"
@@ -229,8 +214,8 @@ export UM_BUILD_GL=/not-defined
 export INPUT_DATA=/not-defined
 
 # same but to match the jobs for UM7.3
-export ANCIL_ATMOS=/projects/access/data/ancil/HadGEM3_cal365/
-export ANCIL_LAND=/projects/access/data/ancil/access_v2
+export ANCIL_ATMOS=/g/data/access/projects/access/data/ancil/HadGEM3_cal365/
+export ANCIL_LAND=/g/data/access/projects/access/data/ancil/access_v2
 
 ###################################################
 # User defined output directories                 #
@@ -240,8 +225,8 @@ export ANCIL_LAND=/projects/access/data/ancil/access_v2
 UM_DATAM=$OASISRUNDIR/ATM_RUNDIR/um_out       # Output Dumps/PP/etc. Generated names
 UM_DATAW=$UM_DATAM                               # User-specific read/write data files
 export DATAW=$UM_DATAW
-export DATAM=$UM_DATAM  
-#ACCESS Coupled run 
+export DATAM=$UM_DATAM
+#ACCESS Coupled run
 export UM_TMPDIR=$OASISRUNDIR/ATM_RUNDIR/tmp
 
 # Ensure the following directories exist (o/w run-only jobs will fail)
@@ -276,29 +261,29 @@ DATAM_TARGET=$DATAM
 
 # Set false to always keep output from all PEs
 export UM_NAM_MAX_SECONDS=${UM_NAM_MAX_SECONDS:-300}
-UM_DEL_MPP_OUTPUT=false  
+UM_DEL_MPP_OUTPUT=false
 # gol124: append only tail instead of whole output files
 # otherwise for large jobs the output may get so large that
 # the system would terminate the job during the append operation
 export UM_TAIL=true
 
 # Indicates whether operational model
-export OPERATIONAL=false       
+export OPERATIONAL=false
 # Switch for automatic output processing
-export AUTOMATIC_PP=false   
+export AUTOMATIC_PP=false
 # Output class for resubmitted jobs
-export OUT_CLASSR=leave    
-# Output class for start-run jobs   
-export OUT_CLASS=leave         
+export OUT_CLASSR=leave
+# Output class for start-run jobs
+export OUT_CLASS=leave
 
 ###################################################
 # Variables relating to reconfiguration           #
 ###################################################
 
-# Timer for reconfiguration       
-export RCF_TIMER=false 
+# Timer for reconfiguration
+export RCF_TIMER=false
 # Delete recon output on success
-RCF_DEL_MPP_OUTPUT=true 
+RCF_DEL_MPP_OUTPUT=true
 # gol124: save for next run?
 RCF_DEL_MPP_OUTPUT=false
 
@@ -310,15 +295,15 @@ export RCF_PRINTSTATUS=${RCF_PRINTSTATUS:-2}
 # gol124: use file from previous run
 export RCF_ATMOS=false
 # Indicates if Ocean reconfiguration step
-export RCF_OCEAN=false 
+export RCF_OCEAN=false
 # Flag to delete old histfile in NRUN
-export PURGEHIST=true          
+export PURGEHIST=true
 # Indicates whether OUTPUT2 is printed
-LONGOUTPUT=false        
-# PrStatus_Min, PrStatus_Normal, PrStatus_Oper or PrStatus_Diag 
-export PRINT_STATUS=${PRINT_STATUS:-PrStatus_Diag} 
+LONGOUTPUT=false
+# PrStatus_Min, PrStatus_Normal, PrStatus_Oper or PrStatus_Diag
+export PRINT_STATUS=${PRINT_STATUS:-PrStatus_Diag}
 # perftrace options for perfview
-export PERFTRACE=false 
+export PERFTRACE=false
 export PERFVIEWOPT="0"
 
 # load module, reconfiguration
@@ -329,38 +314,38 @@ export LOADRECON=$UMDIR/vn$VN/$TARGET_MC/execs/qxreconf
 ###################################################
 
 # Switch for printing files
-export PRINT_INPUT=false 
+export PRINT_INPUT=false
 # Root for system STASHmaster files
-export STASHMSTR=$UMDIR/vn$VN/ctldata/STASHmaster  
+export STASHMSTR=$UMDIR/vn$VN/ctldata/STASHmaster
 # Root for system ANCILmaster files
-export ANCILMSTR=$UMDIR/vn$VN/ctldata/ANCILmaster  
+export ANCILMSTR=$UMDIR/vn$VN/ctldata/ANCILmaster
 # Destination of standard output files
-export UM_STDOUT_FILE=$DATAW/$RUNID.fort6.pe  
+export UM_STDOUT_FILE=$DATAW/$RUNID.fort6.pe
 # Destination of recon atmos output files
-export RCF_STDOUT_FILE_A=$DATAW/$RUNID.fort6.rcfa.pe  
+export RCF_STDOUT_FILE_A=$DATAW/$RUNID.fort6.rcfa.pe
 # Destination of recon ocean output files
-export RCF_STDOUT_FILE_O=$DATAW/$RUNID.fort6.rcfo.pe  
+export RCF_STDOUT_FILE_O=$DATAW/$RUNID.fort6.rcfo.pe
 # Output from pe0 for model
-UM_MPP_OUTPUT="$UM_STDOUT_FILE"0          
+UM_MPP_OUTPUT="$UM_STDOUT_FILE"0
 # Output from pe0 for recon (atm)
-RCF_MPP_OUTPUT_A="$RCF_STDOUT_FILE_A"0         
+RCF_MPP_OUTPUT_A="$RCF_STDOUT_FILE_A"0
 # Output from pe0 for recon (ocn)
-RCF_MPP_OUTPUT_O="$RCF_STDOUT_FILE_O"0         
+RCF_MPP_OUTPUT_O="$RCF_STDOUT_FILE_O"0
 # Output file for the job step
 PREFIXT=""
-export OUTPUT=$DATAW/$PREFIXT$RUNID.out       
+export OUTPUT=$DATAW/$PREFIXT$RUNID.out
 # Running submodels
-export UM_ATMOS=true 
-export UM_OCEAN=false 
-export UM_SLAB=false 
+export UM_ATMOS=true
+export UM_OCEAN=false
+export UM_SLAB=false
 export UM_WAVE=false
 
 # Indicates automatic postprocessing
 export UM_AUTOPP=$AUTOMATIC_PP
 # Indicates whether MPP run
-UM_PROCT=true 
+UM_PROCT=true
 # Indicates a suite run
-UM_SUITE=false 
+UM_SUITE=false
 UM_START_MAIL=false
 UM_END_MAIL=false
 UM_LOUTPUT=200000

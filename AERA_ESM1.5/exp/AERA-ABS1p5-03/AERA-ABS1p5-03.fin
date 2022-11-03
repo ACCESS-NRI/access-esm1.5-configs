@@ -71,13 +71,13 @@ done
 ## 5.2 Output files of the atmosphere (UM)
 #
 
-module load python
+module rm python2
+module load python2/2.7.16
 module use ~access/modules
 module load pythonlib/umfile_utils
 
 ncfile_prev="cableCMIP6_LC_${endyear}.nc"
 ncfile="cableCMIP6_LC_${nextyear}.nc"
-ncfile_thin="cableCMIP6_thin_${nextyear}.nc"
 
 cd $atmrundir/
 # check the date
@@ -87,9 +87,8 @@ if [ -f ${restartfile} ] ; then
 		echo "The um restart file ${restartfile} has invalid date"
 		exit 1
 	fi
-        python /short/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 835 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile_prev ${restartfile}  
-        python /short/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 216 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile ${restartfile}
-#        python /short/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 916 -V thinRatio -n /g/data1a/p66/txz599/data/luc_hist_thinning/$ncfile_thin ${restartfile}
+        python /g/data/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 835 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile_prev ${restartfile}
+        python /g/data/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 216 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile ${restartfile}
         mv ${restartfile} ${archivedir}/restart/atm/${restartarch}
 else
 	echo "The UM restart file ${restartfile} not found!"
@@ -144,17 +143,22 @@ done
 # History files
 cd $ocnrundir/HISTORY
 
-sdir=`pwd` 
 tdir=${archivedir}/history/ocn
-#archjob=`qsub -v sdir=$sdir,tdir=$tdir,idate=${enddate} /short/p66/hxy599/ACCESS/bin/do_mppncombine-cmip5-hxy.ksh`
-archjob=''
-if [ -z $archjob ]; then
-  echo "qsub do_mppncombine failed. Run mom4 files merging here"
-  #/short/p66/hxy599/ACCESS/bin/do_combine_cmip5-hxy.sh $tdir $sdir $enddate
-  /projects/access/data/ACCESS_CMIP5/utils/do_combine_mom4_cmip5.sh $tdir $sdir $enddate
-fi
+# Move ocean history output to archive dir in preparation for mppncombine job.
+# Append enddate so that delayed post-processing doesn't cause overwrites.
+# Files that don't require merging (e.g. scalar)
+for ncfile in *.nc; do
+    mv -f $ncfile $tdir/${ncfile}-${enddate}
+done
+for ncfile in *.nc.????; do
+    mv -f $ncfile $tdir/${ncfile}-${enddate}
+done
+
+cd $expdir  # So the qsub output files appear in the right place.
+qsub -v ARCHIVE_DIR=$tdir,ENDDATE=$enddate /g/data/access/projects/access/data/ACCESS_CMIP5/utils/do_combine_mom5_cmip6.sh
+
 #
-## 5.5 Coupling fields output (if any), e.g., fields_i2o_in_ice.nc etc. 
+## 5.5 Coupling fields output (if any), e.g., fields_i2o_in_ice.nc etc.
 #
 for subrundir in $atmrundir $icerundir $ocnrundir; do
 cd $subrundir
@@ -185,7 +189,7 @@ if [ -f ${expid}.date ]; then
 #  read year month day jobnum yruntime0 truntime0 < ${expid}.date
   #read year month day jobnum truntime0 < ${expid}.date
   #mv ${expid}.date  ${expid}.date_${jobnum}
-  tail -1 ${expid}.date | read year month day jobnum truntime0 
+  tail -1 ${expid}.date | read year month day jobnum truntime0
   echo "year month day jobnum truntime0": $year $month $day $jobnum $truntime0
 else
 #  yruntime0=0
@@ -269,4 +273,3 @@ fi # FCODE
 
 date
 exit
-
