@@ -214,12 +214,10 @@ co2_interactive=1       # 1/0, interacitve co2 on(1)/off(0)
 co2_emits=1             # 1/0, surface emissions on(1)/off(0)
 ndep_flag=1             # 0 fixed Ndep from restart file, 1 monthly from ancillary
 #----------------- condition for warm start --------------------------------
-supplier=cm2704
 expname=HI-EDC-03
-project=p66
 ic_year=2015       #change warm start year here
 #---------------------------------------------------------------------------
-ic_archivedir=/g/data/${project}/${supplier}/archive/${expname}/restart
+ic_archivedir=/g/data/p73/archive/CMIP6/ACCESS-ESM1-5/${expname}/restart
 (( ic_year_e= $ic_year-1 ));
 ic_edate=$ic_year_e'1231';      typeset -Z8 ic_edate
 ic_sdate=$ic_year'0101';      typeset -Z8 ic_sdate

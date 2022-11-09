@@ -27,7 +27,7 @@
 ###cascade lake
 #PBS -q normal
 #PBS -l ncpus=384
-#PBS -l storage=scratch/p66+scratch/access+gdata/p66+gdata/access
+#PBS -l storage=gdata/p66+gdata/access+gdata/p73
 
 ###Broadwell
 ##PBS -q normalbw
