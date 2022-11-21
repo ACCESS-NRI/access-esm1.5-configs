@@ -197,6 +197,21 @@ else
   jobnum=1
 fi
 
+module purge
+module use /g/data/hh5/public/modules
+module load conda/analysis3-22.07
+# Update global mean CO2 and temperature for the current yeae
+python aera_means_update.py $RUNID $archivedir $year
+if [[ $? != 0 ]]; then
+  echo "Error from aera_means_update.py"
+  exit 1
+fi
+# Update the CO2 emissions
+python aera_co2_update.py $RUNID $year
+if [[ $? != 0 ]]; then
+  echo "Error from aera_co2_update.py"
+  exit 1
+fi
 #
 # Number of the next job
 #
@@ -229,8 +244,8 @@ elif [ -f ${expid}.suspend ] ; then
 	echo "`date` : ${jobnum} ${enddate} - Experiment suspended" >> ${expid}.log
 	echo "To resume execute this command: qsub um73-auscom.xe"
 else
-	#next_jobid=`qsub $RUNID`
-        next_jobid=`qsub -W depend=after:${archjob} ${RUNID}`
+	next_jobid=`qsub $RUNID`
+        # next_jobid=`qsub -W depend=after:${archjob} ${RUNID}`
 	echo "Next run is submitted: ${next_jobid}" >> ${expid}.log
 	echo "`date` :  Next run is submitted: ${next_jobid}" >> ${expid}.log
 fi

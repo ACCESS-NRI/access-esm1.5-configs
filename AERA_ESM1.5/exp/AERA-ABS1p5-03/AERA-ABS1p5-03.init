@@ -1109,11 +1109,12 @@ i
 .
 wq
 eof
+# Use a link here to avoid having a string > 80 characters
 ed INITHIS << eof
 /CO2EMITS= 'CO2EMITS : ',
 d
 i
- CO2EMITS= 'CO2EMITS : /g/data/p66/mrd599/CO2_fluxes_AERA_ABS1p5-03.anc',
+ CO2EMITS= 'CO2EMITS : ${exphome}/CO2_flux.anc',
 .
 wq
 eof
