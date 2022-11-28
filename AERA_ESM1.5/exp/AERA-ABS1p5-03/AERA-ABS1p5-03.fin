@@ -198,6 +198,7 @@ else
 fi
 
 module purge
+export PYTHONPATH=  # The purge isn't enough
 module use /g/data/hh5/public/modules
 module load conda/analysis3-22.07
 # Update global mean CO2 and temperature for the current yeae
@@ -209,7 +210,7 @@ fi
 # Update the CO2 emissions
 python aera_co2_update.py $RUNID $year
 if [[ $? != 0 ]]; then
-  echo "Error from aera_co2_update.py"
+  echo "Error from aera__update.py"
   exit 1
 fi
 #
