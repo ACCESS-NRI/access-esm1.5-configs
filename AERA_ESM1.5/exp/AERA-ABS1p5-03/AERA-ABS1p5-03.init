@@ -33,7 +33,11 @@ elif (( $year < 2015 )); then
 else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0 ssp5-8.5
   if [ $CMIP5RUN == "ssp1" ]; then
 #     OZONE_AFILE=SPARC_O3_2005-2099_L38_nopolsol_v2.anc
-     OZONE_AFILE=ozone_2014_2101_ssp126_ESM1.anc
+    if (( $year < 2101 )); then
+      OZONE_AFILE=ozone_2014_2101_ssp126_ESM1.anc
+    else
+      OZONE_AFILE=ozone_2100_ssp126_ESM1.anc
+    fi
   fi
   if [ $CMIP5RUN == "ssp2" ]; then
 #     OZONE_AFILE=SPARC_O3_2005-2099_L38_nopolsol_v2.anc
@@ -58,7 +62,11 @@ elif (( $year < 2015 )); then
 else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0	ssp5-8.5
   if [ $CMIP5RUN == "ssp1" ]; then
 #    SULP_AFILE=sulp_RCP26_2000_2100f.N96
-    SULP_AFILE=scycl_2014_2101_ssp126.anc
+    if (( $year < 2101 )); then
+      SULP_AFILE=scycl_2014_2101_ssp126.anc
+    else
+      SULP_AFILE=scycl_2100_ssp126.anc
+    fi
   fi
   if [ $CMIP5RUN == "ssp2" ]; then
 #    SULP_AFILE=sulp_RCP45_2000_2100f.N96
@@ -83,7 +91,11 @@ elif (( $year < 2015 )); then
 else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0 ssp5-8.5
   if [ $CMIP5RUN == "ssp1" ]; then
 #    SOOT_AFILE=BC_hi_RCP26_2000_2100.N96
-    SOOT_AFILE=BC_hi_2014_2101_ssp126.anc
+    if (( $year < 2101 )); then
+      SOOT_AFILE=BC_hi_2014_2101_ssp126.anc
+    else
+      SOOT_AFILE=BC_hi_2100_ssp126.anc
+    fi
   fi
   if [ $CMIP5RUN == "ssp2" ]; then
 #    SOOT_AFILE=BC_hi_RCP45_2000_2100.N96
@@ -108,7 +120,11 @@ elif (( $year < 2015 )); then
 else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0 ssp5-8.5
   if [ $CMIP5RUN == "ssp1" ]; then
 #    BIO_AFILE=Bio_RCP26_2000_2100.N96
-    BIO_AFILE=BIO_2014_2101_ssp126.anc
+    if (( $year < 2101 )); then
+      BIO_AFILE=BIO_2014_2101_ssp126.anc
+    else
+      BIO_AFILE=BIO_2100_ssp126.anc
+    fi
   fi
   if [ $CMIP5RUN == "ssp2" ]; then
 #    BIO_AFILE=Bio_RCP45_2000_2100.N96
@@ -133,7 +149,11 @@ elif (( $year < 2015 )); then
 else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0 ssp5-8.5
   if [ $CMIP5RUN == "ssp1" ]; then
 #    OCFF_AFILE=OCFF_RCP26_2000_2100.N96
-    OCFF_AFILE=OCFF_2014_2101_ssp126.anc
+    if (( $year < 2101 )); then
+      OCFF_AFILE=OCFF_2014_2101_ssp126.anc
+    else
+      OCFF_AFILE=OCFF_2100_ssp126.anc
+    fi
   fi
   if [ $CMIP5RUN == "ssp2" ]; then
 #    OCFF_AFILE=OCFF_RCP45_2000_2100.N96
@@ -229,7 +249,7 @@ if [ $CMIP5RUN == "historical" ]; then
   cold_start=0 #historial run is warm start, and condition must be set up
   realstartyear=1850 #for historical
 elif [ $CMIP5RUN == "ssp1" ] || [ $CMIP5RUN == "ssp2" ] || [ $CMIP5RUN == "ssp3" ] || [ $CMIP5RUN == "ssp5" ]; then
-  finish_year=2100
+  finish_year=2150
   cold_start=0 #historial run is warm start, and condition must be set up
   realstartyear=2015 #for SSP run
 else
@@ -1050,7 +1070,11 @@ else #carbon cycle is on
   if [ $CMIP5RUN == "historical" ] ; then
     cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_hist_template_CMIP6_1004 CNTLATM
   elif [ $CMIP5RUN == "ssp1" ]; then  # ssp1-2.6
-    cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_ssp126_template_CMIP6 CNTLATM
+    if (( $year < 2101 )); then
+      cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_ssp126_template_CMIP6 CNTLATM
+    else
+      cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_ssp126_ext_template_CMIP6 CNTLATM
+    fi
   elif [ $CMIP5RUN == "ssp2" ]; then  # ssp2-4.5
     cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_ssp245_template_CMIP6 CNTLATM
   elif [ $CMIP5RUN == "ssp3" ]; then  # ssp3-7.0
@@ -1214,6 +1238,7 @@ EOF
 else # ssps
 
 if [ $CMIP5RUN == "ssp1" ]; then  # ssp1-2.6
+if (( $year < 2101 )); then
 ed INITHIS <<\EOF
 /OCFFEMIS/
 a
@@ -1222,7 +1247,16 @@ a
 w
 q
 EOF
-
+else
+ed INITHIS <<\EOF
+/OCFFEMIS/
+a
+ NDEPFIL= 'NDEPFIL  : /g/data1a/p66/txz599/data/ancil/CMIP6/Ndep_2100_ssp126.anc',
+.
+w
+q
+EOF
+fi
 elif [ $CMIP5RUN == "ssp2" ]; then  # ssp2-4.5
 ed INITHIS <<\EOF
 /OCFFEMIS/

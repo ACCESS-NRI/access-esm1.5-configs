@@ -82,13 +82,15 @@ ncfile="cableCMIP6_LC_${nextyear}.nc"
 cd $atmrundir/
 # check the date
 if [ -f ${restartfile} ] ; then
-	validdate=`${bindir}/umdate -b64 ${restartfile} | cut --delimiter=" " --fields=8`
-	if [ ! ${validdate} = "${nextyear}-${nextmonth}-${nextday}" ] ; then
-		echo "The um restart file ${restartfile} has invalid date"
-		exit 1
-	fi
-        python /g/data/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 835 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile_prev ${restartfile}
-        python /g/data/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 216 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile ${restartfile}
+        validdate=`${bindir}/umdate -b64 ${restartfile} | cut --delimiter=" " --fields=8`
+        if [ ! ${validdate} = "${nextyear}-${nextmonth}-${nextday}" ] ; then
+          echo "The um restart file ${restartfile} has invalid date"
+          exit 1
+        fi
+        if (( $endyear < 2101 )); then
+          python /g/data/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 835 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile_prev ${restartfile}
+          python /g/data/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 216 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile ${restartfile}
+        fi
         mv ${restartfile} ${archivedir}/restart/atm/${restartarch}
 else
 	echo "The UM restart file ${restartfile} not found!"
