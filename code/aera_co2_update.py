@@ -1,8 +1,12 @@
 # Update the FF CO2 emissions for the next 5 year block
 # Script is expected to run in the experiment dir.
 
-import sys, numpy as np
+# Uses the 2022-12-23 version from https://github.com/Jete90/AERA
+# https://github.com/Jete90/AERA/commit/d0251d8f8cfc5503f959ab35089f3a2a26875318
+
+import sys, re, numpy as np
 import xarray as xr
+sys.path.append('/g/data/p66/mrd599/venv/aera/lib/python3.9/site-packages')
 import aera
 from pathlib import Path
 import time, shutil
@@ -18,28 +22,32 @@ if YEAR_X < 2024 or YEAR_X%5 != 0:
     print("Not a CO2 update year")
     sys.exit(0)
 
+exp_reg = re.compile('\w*-(\w*)-')
+m = exp_reg.match(RUNID)
+exptype = m.group(1)
+# Expect that this is something like ABS1p5 or REL2p0
+assert len(exptype) == 6
+
 # Type is either relative or absolute with target 1.5 or 2.0
-if RUNID[5:8] == 'ABS':
+if exptype[:3] == 'ABS':
     TEMP_TARGET_TYPE = 2
-elif RUNID[5:8] == 'REL':
+elif exptype[:3] == 'REL':
     TEMP_TARGET_TYPE = 1
 else:
-    print("Error in determing absolute or relative", sys.stderr)
+    print("Error in determing absolute or relative from", exptype, file=sys.stderr)
     sys.exit(1)
 
 # Note that REL_TEMP_TARGET is used as the argument in both cases
-if RUNID[8:11] == '1p5':
+if exptype[3:] == '1p5':
     REL_TEMP_TARGET = 1.5
-elif RUNID[8:11] == '2p0':
+elif exptype[3:] == '2p0':
     REL_TEMP_TARGET = 2.0
 else:
-    print("Error in determing target", sys.stderr)
+    print("Error in determing target from", exptype, file=sys.stderr)
     sys.exit(1)
 
 tas = xr.load_dataset(f'aera_data/aera_input_{RUNID}.nc').tas
-co2 = xr.load_dataset(f'aera_data/aera_input_{RUNID}.nc').co2
 luc = xr.load_dataset('/g/data/p66/mrd599/AERA/luc_emissions.nc').luc
-C_CO2        = 1.5188
 
 """Filled template1.py for use with ACCESS ESM1.5
 
@@ -86,16 +94,10 @@ where code was changed/inserted.
 ###########
 # CONSTANTS
 ###########
-# Set the model start year and model preindustrial CO2
-# concentrations to the correct values for the ESM in use.
 
 # Model start year: Defines in which year the ESM historical run
 # starts.
 MODEL_START_YEAR = 1850
-
-# Model CO2 preindustrial: Defines the preindustrial CO2 concentration
-# in units of ppm in the ESM.
-MODEL_CO2_PREINDUSTRIAL = 291.36
 
 # Enable/Disable output of debug information
 DEBUG = True
@@ -154,21 +156,18 @@ df = aera.get_base_df()
 #
 # This could look something like:
 # df['temp'].loc[MODEL_START_YEAR:YEAR_X] =
-# df['co2_conc'].loc[MODEL_START_YEAR:YEAR_X] =
 # df['ff_emission'].loc[2026:YEAR_X] =
-# (optional): df['rf_non_co2'].loc[MODEL_START_YEAR:YEAR_X] =
 # (optional): df['non_co2_emission'].loc[MODEL_START_YEAR:YEAR_X] =
 # (optional): df['lu_emission'].loc[MODEL_START_YEAR:YEAR_X] =
 
 # SOLVED(2): In the following temperature, CO2 concentration,
 #       fossil fuel emission (from 2026 onward), and non-CO2
-#       emission/radiative forcing time series are loaded and
+#       emission time series are loaded and
 #       written into the dataframe "df".
 
 
 # Temperature
 df['temp'].loc[MODEL_START_YEAR:YEAR_X] = tas.values
-df['co2_conc'].loc[MODEL_START_YEAR:YEAR_X] = co2.values / C_CO2
 df['lu_emission'].loc[:] = 0.
 # LUC file goes to 2500 but other AERA data only to 2499
 df['lu_emission'].loc[MODEL_START_YEAR:2499] = luc.values[:-1]
@@ -199,7 +198,6 @@ s_emission_future = aera.get_adaptive_emissions(
     temp_target_rel=REL_TEMP_TARGET,
     temp_target_type=TEMP_TARGET_TYPE,
     year_x=YEAR_X,
-    co2_preindustrial=MODEL_CO2_PREINDUSTRIAL,
     model_start_year=MODEL_START_YEAR,
     df=df,
     meta_file=AERA_DIR/f'meta_data_{YEAR_X}.nc',
@@ -227,7 +225,6 @@ if DEBUG:
         f'[DEBUG] Year X: {YEAR_X}\n'
         f'[DEBUG] Relative Target Temperature: {REL_TEMP_TARGET}\n'
         f'[DEBUG] Target Temperature Type: {TEMP_TARGET_TYPE}\n'
-        f'[DEBUG] Preindustrial CO2: {MODEL_CO2_PREINDUSTRIAL}\n'
         f'[DEBUG] Model start year: {MODEL_START_YEAR}\n\n\n\n'
         'OUTPUT: \n'
         f'[DEBUG] Calculated the following emissions: {s_emission_future}'
