@@ -170,7 +170,12 @@ df = aera.get_base_df()
 df['temp'].loc[MODEL_START_YEAR:YEAR_X] = tas.values
 df['co2_conc'].loc[MODEL_START_YEAR:YEAR_X] = co2.values / C_CO2
 df['lu_emission'].loc[:] = 0.
-df['lu_emission'].loc[MODEL_START_YEAR:2150] = luc.values
+# LUC file goes to 2500 but other AERA data only to 2499
+df['lu_emission'].loc[MODEL_START_YEAR:2499] = luc.values[:-1]
+
+# N2O only defined to 2300, but constant after 2100 so can be simply extended
+if YEAR_X > 2300:
+    df['n2o_conc'].loc[2301:YEAR_X] = df['n2o_conc'].loc[2300]
 
 # Fossil fuel emission
 try:
@@ -243,6 +248,11 @@ EMISSIONS_ANCIL = AERA_DIR / f'CO2_fluxes_{RUNID}.anc'
 NEW_EMISSIONS = AERA_DIR / f'CO2_fluxes_{RUNID}.anc.new'
 # Mule doesn't handle PosixPath
 ancil = mule.AncilFile.from_file(EMISSIONS_ANCIL.as_posix())
+
+# Expect that the last field in this file is Dec YEAR_X
+if not (ancil.fields[-1].lbmon == 12 and ancil.fields[-1].lbyr == YEAR_X):
+    raise Exception("Unexpected end date in CO2 emissions file")
+
 ancil_new = ancil.copy(include_fields=True)
 
 # First year in this is 2014 which is the base year for scaling emissions
