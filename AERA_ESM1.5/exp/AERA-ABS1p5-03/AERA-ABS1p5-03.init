@@ -249,7 +249,7 @@ if [ $CMIP5RUN == "historical" ]; then
   cold_start=0 #historial run is warm start, and condition must be set up
   realstartyear=1850 #for historical
 elif [ $CMIP5RUN == "ssp1" ] || [ $CMIP5RUN == "ssp2" ] || [ $CMIP5RUN == "ssp3" ] || [ $CMIP5RUN == "ssp5" ]; then
-  finish_year=2150
+  finish_year=2400
   cold_start=0 #historial run is warm start, and condition must be set up
   realstartyear=2015 #for SSP run
 else
