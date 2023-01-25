@@ -1,0 +1,1790 @@
+# This script initializes files and env variables for ACCESS coupled run.
+#
+# imported variables:
+#
+# UM_NPES - total number of cpus allocated to UM
+# TARGET_MC - binary architecture
+# EXPTID - experiment id; should match job request directory
+# RUNID - id for this run, determines name of the run-directory; starts with EXPTID
+# UM_GRID_PFX - name prefix for um grid (allows to switch between
+# resolutions)
+# OASISDIR
+# OASISRUNDIR
+#
+# Exported variables:
+#
+#############################################################################
+#
+# 0. PROLOGUE
+#
+#############################################################################
+date
+set -e
+set -x
+
+#prepare aerosol files by run year
+set_aerosols_by_year(){
+if (( $year < 1850 )); then
+#  OZONE_AFILE=SPARCO3_1850_L38.anc  #picontrol
+  OZONE_AFILE=ozone_1850_ESM1.anc
+elif (( $year < 2015 )); then
+#  OZONE_AFILE=SPARCO3_1850-2009_L38.anc
+  OZONE_AFILE=ozone_1849_2015_ESM1.anc
+else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0 ssp5-8.5
+  if [ $CMIP5RUN == "ssp1" ]; then
+#     OZONE_AFILE=SPARC_O3_2005-2099_L38_nopolsol_v2.anc
+    if (( $year < 2101 )); then
+      OZONE_AFILE=ozone_2014_2101_ssp126_ESM1.anc
+    else
+      OZONE_AFILE=ozone_2100_ssp126_ESM1.anc
+    fi
+  fi
+  if [ $CMIP5RUN == "ssp2" ]; then
+#     OZONE_AFILE=SPARC_O3_2005-2099_L38_nopolsol_v2.anc
+     OZONE_AFILE=ozone_2014_2101_ssp245_ESM1.anc
+  fi
+  if [ $CMIP5RUN == "ssp3" ]; then
+#     OZONE_AFILE=SPARC_O3_2005-2099_L38_nopolsol_v2.anc
+     OZONE_AFILE=ozone_2014_2101_ssp370_ESM1.anc
+  fi
+  if [ $CMIP5RUN == "ssp5" ]; then
+#     OZONE_AFILE=SPARC_O3_2005-2099_L38_nopolsol_v2_cmip5.anc
+     OZONE_AFILE=ozone_2014_2101_ssp585_ESM1.anc
+  fi
+fi
+
+if (( $year < 1850 )); then
+#  SULP_AFILE=scycl_1850_IPCCf.N96.anc
+  SULP_AFILE=scycl_1850_ESM1_v4.anc
+elif (( $year < 2015 )); then
+#  SULP_AFILE=scycle_1850_2000_IPCCf
+  SULP_AFILE=scycl_1849_2015_ESM1_v4.anc
+else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0	ssp5-8.5
+  if [ $CMIP5RUN == "ssp1" ]; then
+#    SULP_AFILE=sulp_RCP26_2000_2100f.N96
+    if (( $year < 2101 )); then
+      SULP_AFILE=scycl_2014_2101_ssp126.anc
+    else
+      SULP_AFILE=scycl_2100_ssp126.anc
+    fi
+  fi
+  if [ $CMIP5RUN == "ssp2" ]; then
+#    SULP_AFILE=sulp_RCP45_2000_2100f.N96
+    SULP_AFILE=scycl_2014_2101_ssp245.anc
+  fi
+  if [ $CMIP5RUN == "ssp3" ]; then
+#    SULP_AFILE=sulp_RCP45_2000_2100f.N96
+    SULP_AFILE=scycl_2014_2101_ssp370.anc
+  fi
+  if [ $CMIP5RUN == "ssp5" ]; then
+#    SULP_AFILE=sulp_RCP85_2000_2100f_cmip5.N96
+    SULP_AFILE=scycl_2014_2101_ssp585_ESM1_v4.anc
+  fi
+fi
+
+if (( $year < 1850 )); then
+#  SOOT_AFILE=BC_hi_IPCC_1850.N96.anc
+  SOOT_AFILE=BC_hi_1850_ESM1.anc
+elif (( $year < 2015 )); then
+#  SOOT_AFILE=BC_hi_IPCC_1850_2000.N96
+  SOOT_AFILE=BC_hi_1849_2015_ESM1.anc
+else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0 ssp5-8.5
+  if [ $CMIP5RUN == "ssp1" ]; then
+#    SOOT_AFILE=BC_hi_RCP26_2000_2100.N96
+    if (( $year < 2101 )); then
+      SOOT_AFILE=BC_hi_2014_2101_ssp126.anc
+    else
+      SOOT_AFILE=BC_hi_2100_ssp126.anc
+    fi
+  fi
+  if [ $CMIP5RUN == "ssp2" ]; then
+#    SOOT_AFILE=BC_hi_RCP45_2000_2100.N96
+    SOOT_AFILE=BC_hi_2014_2101_ssp245.anc
+  fi
+  if [ $CMIP5RUN == "ssp3" ]; then
+#    SOOT_AFILE=BC_hi_RCP45_2000_2100.N96
+    SOOT_AFILE=BC_hi_2014_2101_ssp370.anc
+  fi
+  if [ $CMIP5RUN == "ssp5" ]; then
+#    SOOT_AFILE=BC_hi_RCP85_2000_2100_cmip5.N96
+    SOOT_AFILE=BC_hi_2014_2101_ssp585_ESM1.anc
+  fi
+fi
+
+if (( $year < 1850 )); then
+#  BIO_AFILE=Bio_IPCC_1850.N96.anc
+  BIO_AFILE=Bio_1850_ESM1.anc
+elif (( $year < 2015 )); then
+#  BIO_AFILE=Bio_IPCC_1850_2000.N96
+  BIO_AFILE=Bio_1849_2015_ESM1.anc
+else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0 ssp5-8.5
+  if [ $CMIP5RUN == "ssp1" ]; then
+#    BIO_AFILE=Bio_RCP26_2000_2100.N96
+    if (( $year < 2101 )); then
+      BIO_AFILE=BIO_2014_2101_ssp126.anc
+    else
+      BIO_AFILE=BIO_2100_ssp126.anc
+    fi
+  fi
+  if [ $CMIP5RUN == "ssp2" ]; then
+#    BIO_AFILE=Bio_RCP45_2000_2100.N96
+    BIO_AFILE=BIO_2014_2101_ssp245.anc
+  fi
+  if [ $CMIP5RUN == "ssp3" ]; then
+#    BIO_AFILE=Bio_RCP45_2000_2100.N96
+    BIO_AFILE=BIO_2014_2101_ssp370.anc
+  fi
+  if [ $CMIP5RUN == "ssp5" ]; then
+#    BIO_AFILE=Bio_RCP85_2000_2100_cmip5.N96
+    BIO_AFILE=Bio_2014_2101_ssp585_ESM1.anc
+  fi
+fi
+
+if (( $year < 1850 )); then
+#  OCFF_AFILE=OCFF_IPCC_1850.N96.anc
+  OCFF_AFILE=OCFF_1850_ESM1.anc
+elif (( $year < 2015 )); then
+#  OCFF_AFILE=OCFF_IPCC_1850_2000.N96
+  OCFF_AFILE=OCFF_1849_2015_ESM1.anc
+else # SSP's ssp1-2.6 ssp2-4.5 ssp3-7.0 ssp5-8.5
+  if [ $CMIP5RUN == "ssp1" ]; then
+#    OCFF_AFILE=OCFF_RCP26_2000_2100.N96
+    if (( $year < 2101 )); then
+      OCFF_AFILE=OCFF_2014_2101_ssp126.anc
+    else
+      OCFF_AFILE=OCFF_2100_ssp126.anc
+    fi
+  fi
+  if [ $CMIP5RUN == "ssp2" ]; then
+#    OCFF_AFILE=OCFF_RCP45_2000_2100.N96
+    OCFF_AFILE=OCFF_2014_2101_ssp245.anc
+  fi
+  if [ $CMIP5RUN == "ssp3" ]; then
+#    OCFF_AFILE=OCFF_RCP45_2000_2100.N96
+    OCFF_AFILE=OCFF_2014_2101_ssp370.anc
+  fi
+  if [ $CMIP5RUN == "ssp5" ]; then
+#    OCFF_AFILE=OCFF_RCP85_2000_2100_cmip5.N96
+    OCFF_AFILE=OCFF_2014_2101_ssp585_ESM1.anc
+  fi
+fi
+
+}
+
+
+#
+#-- Export System depending variables
+#
+export MPIPROGINF=DETAIL;
+export MPISUSPEND=ON;
+export F_PROGINF=detail;
+export F_FTRACE=YES;
+
+export MPLARGS=" " ;
+export F_SETBUF06=50000
+export F_SETBUF07=50000
+export F_SETBUF08=50000
+export ATM_COMPARAL=1
+export F_SYSLEN=300
+export F_SETBUF00=50000    #non-zero buffer for 00 (i/o unit=0) ?
+
+MPIEXPORT="F_PROGINF F_SYSLEN"
+MPIEXPORT="${MPIEXPORT} MPIPROGINF F_FTRACE MPISUSPEND"
+MPIEXPORT="${MPIEXPORT} F_SETBUF00 F_SETBUF06 F_SETBUF07 F_SETBUF08"
+export MPI_MULTITASKMIX="ON"
+export MPIEXPORT="${MPIEXPORT} MPI_MULTITASKMIX"
+export MPI_BUFFER_MAX=5000000   #required by who?
+#location of aerosol files for historical run and future scenarios
+export CMIP5ANCIL_AEROSOL=/g/data1a/p66/txz599/data/ancil/CMIP6
+#export CMIP5ANCIL_AEROSOL=/g/data1a/p66/txz599/data/ancil/CMIP5
+
+#
+#-- increase stack limit to ensure mppncombine and models can run
+#
+ulimit -s unlimited
+
+#
+#-- enable core dumps for debugging runs
+#
+ulimit -c unlimited
+
+#############################################################################
+#
+# 1. Primary setups
+#
+#############################################################################
+#
+## 1.1 Experiment ID etc.
+#
+# (PBS vars should be imported from calling script)
+#jobid=$PBS_JOBID        # job-id assigned by PBS (the queue sys)
+#job=$PBS_JOBNAME        # name of this script
+#arch=$TARGET_MC 	# Platform Architecture
+chan=MPI1       	# Message Passage (MPI1/MPI2)
+um_grid=${UM_GRID_PFX:-um96} 	#um96 by default
+
+#---------------------------------------------------------------------------
+#--------------------- Critical part for jobtype setting--------------------
+#---------------------------------------------------------------------------
+CMIP5RUN="ssp1" #picontrolv,historical,pi4xCO2,pi1pcntCO2,ssp1,ssp2,ssp3,ssp5
+cold_start=0            # 1/0, starts from 'scratch'(1)/spinup(0) (warm start)
+co2_flag=1              # 1/0, indicate whether to turn on(1)/off(0) carbon cycle
+co2_flag_o=1            # ocean co2 flag
+co2_interactive=1       # 1/0, interacitve co2 on(1)/off(0)
+co2_emits=1             # 1/0, surface emissions on(1)/off(0)
+ndep_flag=1             # 0 fixed Ndep from restart file, 1 monthly from ancillary
+#----------------- condition for warm start --------------------------------
+expname=AERA-ABS1p5-03
+ic_year=2026       #change warm start year here
+#---------------------------------------------------------------------------
+ic_archivedir=/scratch/p66/mrd599/archive/${expname}/restart
+(( ic_year_e= $ic_year-1 ));
+ic_edate=$ic_year_e'1231';      typeset -Z8 ic_edate
+ic_sdate=$ic_year'0101';      typeset -Z8 ic_sdate
+#---------------------------------------------------------------------------
+finish_year=200 #for PI runs
+#historical run settings:
+if [ $CMIP5RUN == "historical" ]; then
+  finish_year=2014
+  cold_start=0 #historial run is warm start, and condition must be set up
+  realstartyear=1850 #for historical
+elif [ $CMIP5RUN == "ssp1" ] || [ $CMIP5RUN == "ssp2" ] || [ $CMIP5RUN == "ssp3" ] || [ $CMIP5RUN == "ssp5" ]; then
+  finish_year=2400
+  cold_start=0 #historial run is warm start, and condition must be set up
+  realstartyear=2026 #for AERA2 starting from AERA
+else
+  realstartyear=101  #$ic_year   #$ic_year #it must be greater than 2 to work. #for picontrol warm start
+fi
+module load python2
+secs_realyr=`~access/data/ACCESS_CMIP5/utils/datediff_sec.py 1 1 1 $realstartyear 1 1 | cut -d ' ' -f 8 `
+realsdate=$realstartyear'0101'  ; typeset -Z8 realsdate
+(( realeyr=$realstartyear-1 ))
+realedate=$realeyr'1231'        ; typeset -Z8 realedate ; typeset -Z4 realstartyear
+#---------------------------------------------------------------------------
+
+#
+## 1.2 Define paths
+#
+
+# Location where jobs are submitted (and this script stays)
+exphome=$SYSTEMDIR/exp/${RUNID}
+bindir=$SYSTEMDIR/bin
+inputdir=/g/data/access/projects/access/data/ACCESS_CMIP5 #$SYSTEMDIR/input
+inputdir2a=~access/access-cm2/input_a
+inputdir2b=~access/access-cm2/input_b
+archivedir=${SHORTDIR}/archive/${RUNID}
+
+um_grid=${UM_GRID_PFX:-um96}    #um96 by default
+
+# Location of outputs (short-term storage, to be transferred to cherax later)
+datahome=${DATADIR}			# ie,
+outputdir=$datahome/$OASISDIR	# eg, /cs/data/bi003/toyclim/oni01
+logdir=${outputdir}/log			# stores run info files (unimportant)
+restdir=${outputdir}/restart		# stores the system restart files
+histdir=${outputdir}/history		# stores all the model results
+
+# Location where the model exectuables are stored:
+# bindir - set above
+
+# Location where the coupled model runs:
+workhome=${WORKDIR}		# eg, /short/p73/dhb599/work
+rundir=${OASISRUNDIR}		# eg, $workhome/um_coupled/C-001
+
+# Note _RUN suffix rather than usual RUNDIR to avoid UM path limits.
+atmrundir=$rundir/ATM_RUN
+ocnrundir=$rundir/OCN_RUN
+icerundir=$rundir/ICE_RUN
+cplrundir=$rundir/CPL_RUN
+
+outputdir=$atmrundir/um_out                   	# um output
+
+#
+## 1.3 Create directories for this exp if needed (ie, initial run)
+#
+
+# * make dirs/subdirs recognizable for all component models.  accordingly,
+# * the relevant model code MUST be changed for these new subdirs and some
+# * filenames for CORRECT I/O paths
+
+cd  ${workhome}
+mkdir -p $rundir
+
+#
+## 1.4 Define names of executables and assign the number of cpus for them
+#
+
+atm_exe=um7.3x
+ocn_exe=mom5xx
+ice_exe=cicexx
+
+#
+nproc_atm=$UM_NPES	#defined in main script
+nproc_ice=12		#must be consistent with $NTASK in compiling script
+nproc_ocn=180		#changable (check "layout" below for consistency)
+
+oce_nx=18; oce_ny=10      # nproc_ocn = oce_nx * oce_ny
+
+# total number of procs for this job:
+(( ntproc = nproc_atm + nproc_ocn + nproc_ice ))
+
+if [ $ATM_CPL_TYPE = "P" ] ; then
+   ncplproc_atm=${nproc_atm}		#parallel-cpu coupling
+   L_CPL_MASTER=".false."
+else
+   ncplproc_atm=1		#mono-cpu coupling (1)
+   L_CPL_MASTER=".true."
+fi
+
+#############################################################################
+#
+# 2. Run Calendar (for fine date control: initial/restart automatic)
+#
+#############################################################################
+#
+## 2.1 Time control (for the whole exp and this run chunk)
+#
+#-- Calendar type: Available calendar options:
+#     0   : No leap year (365 days per year)
+#     1   : Gregorian (365/366 days per year)
+#     n   : Equal months of "n" days (30 for 30 day months)
+
+##: default set as below (for era40 and ncep2 forcing)
+#caltype=1               #0, 1 or n (eg, 30 for 30 day months)
+caltype=1               #0, 1 or n (eg, 30 for 30 day months)
+#cal_type="'julian'"     #when caltype=1; needed for mom
+cal_type="'gregorian'"
+
+#-- Initial and Final Date of the Experiment
+iniyear=1;	finalyear=$finish_year;		typeset -Z4 iniyear  finalyear
+inimonth=1;	finalmonth=12;		typeset -Z2 inimonth finalmonth
+iniday=1;	finalday=31;		typeset -Z2 iniday   finalday
+
+inidate=${iniyear}${inimonth}${iniday}			#YYYYMMDD
+finaldate=${finalyear}${finalmonth}${finalday}		#YYYYMMDD
+if [ $realstartyear -le 1 ]; then
+  realstartyear=2
+  if [ $cold_start == 0 ]; then
+    echo warm start from year $realstartyear
+  fi
+fi
+
+#-- Duration of a run/chunk (HERE is most often visited for test/short runs!)
+nyear=0			# number of years
+nmonth=12		# number of months
+nday=0 			# number of days
+
+#
+## 2.2 Date info of this run
+#
+
+cd $exphome
+
+typeset -Z4 year; typeset -Z2 month day
+if [ ! -f ${RUNID}.date ]; then
+  year=${iniyear}		#
+  month=${inimonth}		#
+  day=${iniday}			#
+  jobnum=1			# 1 for initial run, >1 for continue runs
+  truntime0=0                   # total accumulated runtime by the end of last run
+  if [ -f  ${RUNID}.log ]; then
+    rm ${RUNID}.log
+  fi
+  echo "`date` :  Beginning of Experiment ${RUNID}" > ${RUNID}.log
+  if [ $cold_start == 0 ]; then
+    #create .date file for warm start/historical run
+    echo "$realstartyear 01 01 2 $secs_realyr" > ${RUNID}.date
+    #read year month day jobnum truntime0 < ${RUNID}.date
+    tail -1 ${RUNID}.date | read year month day jobnum truntime0
+    echo "year month day jobnum truntime0: ", $year $month $day $jobnum $truntime0
+    jobnum=1			# 1 for initial setup of work directories, >1 for continue runs
+  fi
+else
+  #read year month day jobnum truntime0 < ${RUNID}.date
+  tail -1 ${RUNID}.date | read year month day jobnum truntime0
+  echo "year month day jobnum truntime0: ", $year $month $day $jobnum $truntime0
+fi
+
+date=${year}${month}${day}
+echo " " >> ${RUNID}.log
+echo "`date` :  ${jobnum} ${date} - starting pre-processing" >> ${RUNID}.log
+
+
+#B: use the oasis322 attached f90 program to work out the run date info.
+#   (there must be a much 'easier' way for this... but it works ok anyway!)
+
+cat > calendar${RUNID}.in << EOF
+  ${inidate} ${date} ${nyear} ${nmonth} ${nday} ${caltype}
+EOF
+
+~access/bin/calendar_more < calendar${RUNID}.in > calendar${RUNID}.out
+
+prevdate=`cat calendar${RUNID}.out | cut -c '2-9'`
+enddate=`cat calendar${RUNID}.out | cut -c '11-18'`
+nextdate=`cat calendar${RUNID}.out | cut -c '20-27'`
+previnidate=`cat calendar${RUNID}.out | cut -c '29-36'`
+days_in_run=`cat calendar${RUNID}.out | cut -c '38-45' | egrep -o [[:digit:]]+`
+days_since_start=`cat calendar${RUNID}.out | cut -c '47-54'`
+date_in_days=`cat calendar${RUNID}.out | cut -c '56-63'`
+days_this_year=`cat calendar${RUNID}.out | cut -c '65-67'`
+
+# we'll need it again in the post-processing script
+# rm calendar.in calendar.out
+
+prevyear=` echo "$prevdate" | cut -c '1-4'`
+prevmonth=` echo "$prevdate" | cut -c '5-6'`
+prevday=` echo "$prevdate" | cut -c '7-8'`
+
+endyear=` echo "$enddate" | cut -c '1-4'`
+endmonth=` echo "$enddate" | cut -c '5-6'`
+endday=` echo "$enddate" | cut -c '7-8'`
+
+nextyear=` echo "$nextdate" | cut -c '1-4'`
+nextmonth=` echo "$nextdate" | cut -c '5-6'`
+nextday=` echo "$nextdate" | cut -c '7-8'`
+
+previniyear=` echo "$previnidate" | cut -c '1-4'`
+previnimonth=` echo "$previnidate" | cut -c '5-6'`
+previniday=` echo "$previnidate" | cut -c '7-8'`
+
+echo ""
+echo "first day of this run:          ${date}"
+echo "last day of this run:           ${enddate}"
+echo "initial date of the experiment: ${inidate}"
+echo "final date of the experiment:   ${finaldate}"
+echo "day before the initial date:    ${previnidate}"
+echo "last day of the previous run:   ${prevdate}"
+echo "first day of the next run:      ${nextdate}"
+echo ""
+echo "number of days in this run:                       ${days_in_run}"
+echo "number of days since beginning of the experiment: ${days_since_start}"
+echo ""
+
+# MRD
+#echo ${nextdate} > nextdate
+
+(( runtime = ${days_in_run} * 86400 ))  #duration of this run in seconds
+
+echo "duration of this run in seconds:                  ${runtime}"
+
+#############################################################################
+#
+# 3. Data files, exectuables, and namelist files preparation
+#
+#############################################################################
+
+#
+## 3.1 Copy grids associated, initial/restart files and exectuables etc.
+#
+
+if [ $jobnum = 1 ]; then			#initial run
+
+  echo "Initial run: jobnum = 1"
+
+ mkdir -p ${archivedir}/restart
+  cd ${archivedir}/restart
+  mkdir -p atm ocn ice cpl
+  cd ../../
+  mkdir -p ${archivedir}/history
+  cd ${archivedir}/history
+  mkdir -p atm ocn ice
+
+  cd $WORKDIR
+
+  # refresh the working dir
+  rm -fr $rundir; mkdir -p $rundir
+
+  mkdir -p $atmrundir/tmp $atmrundir/tmp_ctrl $outputdir
+  mkdir -p $ocnrundir/INPUT $ocnrundir/RESTART $ocnrundir/HISTORY
+  mkdir -p $icerundir/INPUT $icerundir/RESTART $icerundir/HISTORY
+  mkdir -p $cplrundir
+
+  if [[  -h $exphome/Running.dir ]]; then
+    rm -f $exphome/Running.dir
+  fi
+  ln -s $rundir $exphome/Running.dir
+
+  #change the day of initial time of ancillary files to 1 from 16.
+  #to avoid error "REPLANCA: Current time precedes start time of data"
+if [ $CMIP5RUN == "historical" ]; then
+  cd $atmrundir
+  set_aerosols_by_year
+  cp $CMIP5ANCIL_AEROSOL/$OZONE_AFILE .
+  cp $CMIP5ANCIL_AEROSOL/$SULP_AFILE .
+  cp $CMIP5ANCIL_AEROSOL/$SOOT_AFILE .
+  cp $CMIP5ANCIL_AEROSOL/$BIO_AFILE .
+  cp $CMIP5ANCIL_AEROSOL/$OCFF_AFILE .
+
+  module load python2
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $OZONE_AFILE
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $SULP_AFILE
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $SOOT_AFILE
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $BIO_AFILE
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $OCFF_AFILE
+  # and then use the ancillary files only for the first run
+  CMIP5ANCIL_AEROSOL=$atmrundir
+fi
+  cd $rundir
+
+  # copy executables
+  cp -f /g/data/p66/txz599/ACCESS-ESM1p5/bin/um_hg3.exe-20200311_r343 $atm_exe
+  cp -f /g/data/p66/pbd562/test/t47-hxw/jan20/4.0.2/trunk_ESM1.5/bin/cice4.1_access-mct-12p-20200110 $ice_exe
+  cp -f /g/data/p66/pbd562/test/t47-hxw/jan20/4.0.2/trunk_ESM1.5/submodels/ACCESS-ESM1.5-MOM5/exec/access-cm2/ACCESS-CM/fms_ACCESS-CM.x $ocn_exe
+
+  # Get input files for oasis3:
+  cd $cplrundir/
+  # a. ref and grids data
+  cp -f $inputdir/oasis3/cf_name_table.txt .
+  cp -f $inputdir/oasis3/oasis3_grids_20101208.nc       grids.nc
+  cp -f $inputdir/oasis3/oasis3_masks_20101208.nc       masks.nc
+  cp -f $inputdir/oasis3/oasis3_areas_20101208.nc       areas.nc
+
+  cp -f  $inputdir/oasis3-mct/rmp_um*.nc $atmrundir/
+  cp -f  $inputdir/oasis3-mct/rmp_cice*.nc $icerundir/
+
+  # b. the pre-processed coupling restart files:
+#  cp -f $inputdir/oasis3/a2i_24fields_20100130.nc       a2i.nc
+#  cp -f $inputdir/oasis3/o2i_7fields_20100130.nc        o2i.nc
+#  cp -f $inputdir/oasis3/i2a_18fields_20100130.nc       i2a.nc
+#
+if (( $cold_start == 1 )); then
+  #co2 fields added
+  cp -f $inputdir/oasis3-mct/a2i_26fields_20100130.nc       a2i.nc
+  cp -f $inputdir/oasis3-mct/o2i_9fields_20100130.nc        o2i.nc
+  cp -f $inputdir/oasis3-mct/i2a_20fields_20100130.nc       i2a.nc
+else  #warm start --> for historical run, cold_start must be 0
+    cp ${ic_archivedir}/cpl/*.nc-${ic_edate} ${archivedir}/restart/cpl/
+
+    if [[ $ic_edate != $realedate ]]; then
+        rename $ic_edate $realedate ${archivedir}/restart/cpl/*.nc-$ic_edate
+    else
+        echo "Skipping rename"
+    fi
+
+    cp ${archivedir}/restart/cpl/a2i.nc-${prevdate} $cplrundir/a2i.nc
+    cp ${archivedir}/restart/cpl/o2i.nc-${prevdate} $cplrundir/o2i.nc
+    cp ${archivedir}/restart/cpl/i2a.nc-${prevdate} $cplrundir/i2a.nc
+
+fi #cold_start
+
+  # ... Note the above x2x.nc files are also required to be existing at the submodel
+  # ... running directories, and the 'link' must be built within the target dirs:
+  cd $atmrundir
+  ln -sf $cplrundir/a2i.nc .
+  cd $ocnrundir
+  ln -sf $cplrundir/o2i.nc .
+  cd $icerundir
+  ln -sf $cplrundir/i2a.nc .
+  cd $icerundir/RESTART/
+  ln -sf $cplrundir/o2i.nc .
+  # ... the above link must not be broken during the course of the experiment! ...
+
+  #cable.nml file required by CABLE 2.0
+  [ ! -e ~/CABLE-AUX-1.4/core/biogeophys/def_veg_params.txt ] && cp -rf ~access/data/ACCESS_CMIP5/CABLE-AUX-1.4 ~/
+  cd $atmrundir
+  #ln -sf /projects/access/CABLE-AUX/UM/cable.nml .
+  #co2 controllable cable namelist file
+if [ $co2_flag = 0 ]; then
+  cp $inputdir/um_control/access1.3/cable2C.nml cable.nml
+echo "this run is not for carbon cycle"
+
+else
+  echo "this run is for carbon cycle"
+#  cp /home/599/txz599/CABLE-AUX/UMC/cable_switches.nml cable.nml
+#  cp $inputdir/um_control/access1.3/cable_cnp_only_switches2.nml cable.nml
+   cp /g/data/p66/txz599/data/ctrl_files/cable_luc.nml cable.nml
+fi
+
+if [ $cold_start == 1 ]; then
+#set CABLE_RUNTIME_COUPLED to FALSE for new cold_start run
+  cd $atmrundir
+  ed cable.nml <<eof
+g/cable_user%CABLE_RUNTIME_COUPLED = .TRUE./s/cable_user%CABLE_RUNTIME_COUPLED = .TRUE./cable_user%CABLE_RUNTIME_COUPLED = .FALSE./
+w
+q
+eof
+fi
+
+  # Get input files for mom4
+
+  cd $ocnrundir
+
+  cd INPUT
+  cp -f $inputdir/mom4/grid_spec.auscom.20110618.nc	grid_spec.nc
+#  cp -f $inputdir/mom4/seawifs_kdpar3_Zhou.nc	ssw_atten_depth.nc
+  cp -f $inputdir2b/mom4/seawifs_auscom_20111118_edit_time.nc   ssw_atten_depth.nc
+  cp -f $inputdir/mom4/basin_mask_20111103.nc   $ocnrundir/INPUT/basin_mask.nc
+
+#  cp -f $inputdir/mom4/field_table_20110404 		field_table
+  cp -f $inputdir2b/mom4/field_table_20110404_112x247_328x139           field_table
+  cp -f $inputdir/mom4/data_table			data_table
+  cp -f $inputdir/mom4/geothermal_heating_auscom_20080605.nc	geothermal_heating.nc
+  cp -f $inputdir/mom4/tides_auscom_20080605.nc		tideamp.nc
+  cp -f $inputdir/mom4/roughness_auscom_20080605_roughness_amp.nc roughness_amp.nc
+#
+if [ $co2_flag_o = 0 ]; then
+  echo "this run is not for carbon cycle: diag_table"
+#  cp -f $inputdir/mom4/CMIP5_diagtable_monthly_20130327		diag_table
+  cp -f $inputdir2a/mom4/diag_table_mom5_highres_20141211               diag_table
+else
+  echo "this run is for carbon cycle: diag_table"
+#  cp -f /g/data1a/p66/txz599/data/ocn/diag_table_dec18      diag_table
+  cp -f /g/data1a/p66/txz599/data/ocn/diag_table.esm.20190627      diag_table
+
+fi
+ed diag_table <<eof
+g/#SYEAR/s/#SYEAR/${year}/
+g/#SMON/s/#SMON/${month}/
+g/#SDAY/s/#SDAY/${day}/
+w
+q
+eof
+
+  if [ $co2_flag_o = 1 ]; then # bgc stuff
+      echo "this run is for carbon cycle: bgc"
+      cp -f  $inputdir/bgc_y0001/csiro_bgc.res_txz599.nc  csiro_bgc.res.nc
+      cp -f  $inputdir/bgc_y0001/ocmip2_*            .
+      cp -f  $inputdir/bgc_y0001/dust.nc            .
+      cp -f  $inputdir/bgc_y0001/co2_obs.nc      .
+      cp -f  /g/data1a/p66/txz599/data/ocn/bgc_param.aos.sep18.nc bgc_param.nc
+      cp -f  $inputdir/bgc_y0001/csiro_bgc_sediment.res_txz599.nc  csiro_bgc_sediment.res.nc
+  fi # bgc end
+
+  if [ $co2_flag_o = 1 ]; then # cfc stuff
+      echo "this run is for carbon cycle: cfc"
+      cp -f  $inputdir/bgc_y0001/ocmip2_*            .
+      cp -f $inputdir/bgc_y0001/cfc_auscom_20110418.nc      cfc_auscom.nc
+      #cp -f $inputdir/bgc_y0001/field_table_20110404_co2 field_table
+      cp -f /g/data1a/p66/txz599/data/ocn/field_table_20180219_nocfc field_table
+  fi
+
+
+
+  if (( $cold_start == 1 )); then
+    #get ocean initial condition
+    cp -f $inputdir/mom4/ocean_temp_salt.20110518.nc ocean_temp_salt.res.nc
+  else  #warm start
+
+    #---------------------------------------------------------------------------
+    # use AusCOM spinup run (or ACCESS run) restart to initialise this job:
+    # *** here is the place to change IC source location (AusCOM runs) ***
+    #
+    cp ${ic_archivedir}/ocn/*-${ic_edate} ${archivedir}/restart/ocn/
+    if [[ $ic_edate != $realedate ]]; then
+        rename $ic_edate $realedate ${archivedir}/restart/ocn/*-$ic_edate
+    else
+        echo "Skipping rename"
+    fi
+
+#the following revision is 'critical' for making the restart files 'usable':
+    ic_year_fmt=$ic_year
+    if [ $ic_year -lt 10 ]; then
+      typeset -Z1 ic_year_fmt
+    elif [ $ic_year -lt 100 ]; then
+      typeset -Z2 ic_year_fmt
+    elif [ $ic_year -lt 1000 ]; then
+      typeset -Z3 ic_year_fmt
+    elif [ $ic_year -lt 10000 ]; then
+      typeset -Z4 ic_year_fmt
+    fi
+    realstartyear_fmt=$realstartyear
+    if [ $realstartyear -lt 10 ]; then
+      typeset -Z1 realstartyear_fmt
+    elif [ $realstartyear -lt 100 ]; then
+      typeset -Z2 realstartyear_fmt
+    elif [ $realstartyear -lt 1000 ]; then
+      typeset -Z3 realstartyear_fmt
+    elif [ $realstartyear -lt 10000 ]; then
+      typeset -Z4 realstartyear_fmt
+    fi
+
+ed ${archivedir}/restart/ocn/ocean_solo.res-$realedate << eof
+g/$ic_year_fmt/s/$ic_year_fmt/$realstartyear_fmt/
+wq
+eof
+
+  for restfile in `ls ${archivedir}/restart/ocn/*-${prevdate}`; do
+     newfile=${restfile##*/}
+     cp ${restfile} ${newfile%-*}
+  done
+  fi    #cold_start
+  #---------------------------------------------------------------------------
+
+  # Get input files for cice
+
+  cd $icerundir/INPUT
+
+  cp -f $inputdir/cice/cice_grid_20101208.nc grid.nc
+  cp -f $inputdir/cice/cice_kmt_20101208.nc kmt.nc
+  cp -f $inputdir/cice/SSTS_12Jans_dbl_20081015.nc monthly_sstsss.nc
+
+  #warm start
+  if (( $cold_start == 0 )); then
+    cp ${ic_archivedir}/ice/iced.${ic_sdate}	  ${archivedir}/restart/ice/ # to be modified by cicedumpdatemodify.py
+    cp ${ic_archivedir}/ice/mice.nc-${ic_edate}   ${archivedir}/restart/ice/mice.nc-$realedate
+    module load nco
+    ncatted -a units,time,o,c,"seconds since $realstartyear-01-01 00:00:00" ${archivedir}/restart/ice/mice.nc-$realedate
+    echo iced.$realsdate > ${archivedir}/restart/ice/ice.restart_file-$realedate
+    ~access/data/ACCESS_CMIP5/utils/cicedumpdatemodify.py -i ${archivedir}/restart/ice/iced.${ic_sdate} -o ${archivedir}/restart/ice/iced.${realsdate} --istep0=0 --time=${secs_realyr}. --time_forc=0.
+
+    cd $icerundir/RESTART
+    cp ${archivedir}/restart/ice/ice.restart_file-${prevdate} 	ice.restart_file
+    cp ${archivedir}/restart/ice/`cat ice.restart_file`		.
+    cp ${archivedir}/restart/ice/mice.nc-${prevdate} 	  	mice.nc
+
+  fi
+
+  cd $atmrundir
+
+  # Get UM IC
+if [ $co2_flag = 0 ]; then
+  echo "this run is not for carbon cycle: astart"
+  #reconfig by aabbj which has 1 more stash 462 from ~voh001/access/HAND_EDITS/STASHmaster_A_v73_GC_PFV
+  cp -f $inputdir/um_astart/access1.4_PI.astart		${outputdir}/${RUNID}.astart
+else
+  echo "this run is for carbon cycle: astart"
+  cp -f $inputdir/um_astart/access1.4_PI_cc.astart		${outputdir}/${RUNID}.astart
+module load python2
+~access/data/ACCESS_CMIP5/utils/change_dump_date.py ${outputdir}/${RUNID}.astart << eof
+$year 1 1
+eof
+
+fi
+  #warm start
+  if (( $cold_start == 0 )); then
+    echo "warm start"
+    cp -f ${ic_archivedir}/atm/${expname}.astart-${ic_sdate} ${archivedir}/restart/atm/${RUNID}.astart-$realsdate
+    #cp -f /g/data1a/p66/txz599/data/restart_files/PI-C2C-1p5r42.astart-07010101_NPPprog ${archivedir}/restart/atm/${RUNID}.astart-$realsdate
+    module load python2
+~access/data/ACCESS_CMIP5/utils/change_dump_date.py ${archivedir}/restart/atm/${RUNID}.astart-$realsdate << eof
+$year 1 1
+eof
+    cp ${archivedir}/restart/atm/${RUNID}.astart-$realsdate ${outputdir}/${RUNID}.astart
+  fi
+
+
+  # Get control files (below)
+#for historical run
+  if (( $cold_start == 0 )); then
+    jobnum=2
+  fi
+else						#restart runs
+
+  echo "Restart run: jobnum = $jobnum"
+
+if [ $CMIP5RUN == "historical" ]; then
+  if [ $jobnum -gt  2 ]; then
+    rm -f $atmrundir/{BC_hi_*,Bio_*,OCFF_*,SPARCO3_*,scycle_*,sulp_*}
+  else #use the aerosol files which initial day is 1 modudied above
+  #change the day of initial time of ancillary files to 1 from 16.
+  #to avoid error "REPLANCA: Current time precedes start time of data"
+  cd $atmrundir
+  set_aerosols_by_year
+  cp $CMIP5ANCIL_AEROSOL/$OZONE_AFILE .
+  cp $CMIP5ANCIL_AEROSOL/$SULP_AFILE .
+  cp $CMIP5ANCIL_AEROSOL/$SOOT_AFILE .
+  cp $CMIP5ANCIL_AEROSOL/$BIO_AFILE .
+  cp $CMIP5ANCIL_AEROSOL/$OCFF_AFILE .
+
+  module load python2
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $OZONE_AFILE
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $SULP_AFILE
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $SOOT_AFILE
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $BIO_AFILE
+  ~access/data/ACCESS_CMIP5/utils/set_ancil_initday1.py $OCFF_AFILE
+    # and then use the ancillary files only for the first run
+    CMIP5ANCIL_AEROSOL=$atmrundir
+  fi
+fi
+
+#  cp -p $atmrundir/cable.nml $atmrundir/cable.nml-${prevdate}
+
+  #update exes here if needed
+  cd $rundir
+
+  rm -f *out* fields_*.nc ?weights *.prt* $ocnrundir/HISTORY/do-mppncombine.*
+  rm -f $ocnrundir/???hosts*.txt
+
+  #if any executable updated:
+#  cp -fp /short/p66/txz599/ACCESSESM1/bin/fms_ACCESS-CM.14032018 $ocn_exe
+#  cp -fp /short/p66/txz599/ACCESSESM1/bin/fms_ACCESS-CM.x $ocn_exe
+#  cp -fp $bindir/cice4.1_access-mct-6p-20131214-nofm $ice_exe
+#  cp -f $bindir/um_hg3.exe-test-CABLE2_cc-20140117	$atm_exe
+#  cp -f /short/p66/txz599/ACCESSHOME/bin/um_hg3.exe-20180619_esm1p5_r35 $atm_exe
+
+  # Prepare restart files:
+  # oasis3:
+  cp ${archivedir}/restart/cpl/a2i.nc-${prevdate} $cplrundir/a2i.nc
+  cp ${archivedir}/restart/cpl/o2i.nc-${prevdate} $cplrundir/o2i.nc
+  cp ${archivedir}/restart/cpl/i2a.nc-${prevdate} $cplrundir/i2a.nc
+
+  # UM
+  # find out the ending of the dump file for enddate
+  umdate=`~access/umdir/vn7.3/normal/cm1scripts/datetoum ${year} ${month} ${day} 0`
+  restartfile="${archivedir}/restart/atm/${RUNID}.astart-${year}${month}${day}"
+  if [ -f ${restartfile} ] ; then
+	validdate=`~access/umdir/vn7.3/normal/cm1scripts/umdate -b64 ${restartfile} | cut --delimiter=" " --fields=8`
+	if [ ! ${validdate} = "${year}-${month}-${day}" ] ; then
+		echo "The um restart file ${restartfile} has invalid date"
+		exit 1
+	fi
+	cp ${restartfile} ${outputdir}/${RUNID}.astart
+        #cp ${restartfile} $atmrundir/${RUNID}.astart  #later???#
+  else
+	echo "The UM restart file ${restartfile} not found!"
+	exit 1
+  fi
+
+#change CABLE_RUNTIME_COUPLED to TRUE after new run
+  [ ! -e ~/CABLE-AUX-1.4/core/biogeophys/def_veg_params.txt ] && cp -rf ~access/data/ACCESS_CMIP5/CABLE-AUX-1.4 ~/
+  cd $atmrundir
+  ed cable.nml <<eof
+g/cable_user%CABLE_RUNTIME_COUPLED = .FALSE./s/cable_user%CABLE_RUNTIME_COUPLED = .FALSE./cable_user%CABLE_RUNTIME_COUPLED = .TRUE./
+w
+q
+eof
+
+  # MOM4
+
+  cd $ocnrundir/INPUT
+
+  for restfile in `ls ${archivedir}/restart/ocn/*-${prevdate}`; do
+     newfile=${restfile##*/}
+     cp ${restfile} ${newfile%-*}
+  done
+
+  # CICE
+
+  cd $icerundir/RESTART
+
+  cp ${archivedir}/restart/ice/ice.restart_file-${prevdate} 	ice.restart_file
+  cp ${archivedir}/restart/ice/`cat ice.restart_file`		.
+  cp ${archivedir}/restart/ice/mice.nc-${prevdate} 	  	mice.nc
+fi  # if [jobnum = 1]
+
+#change CABLE_RUNTIME_COUPLED to TRUE after new run (jobnum=1)
+if [ $jobnum -ge 2 ]; then
+  cd $atmrundir
+  ed cable.nml <<eof
+g/cable_user%CABLE_RUNTIME_COUPLED = .FALSE./s/cable_user%CABLE_RUNTIME_COUPLED = .FALSE./cable_user%CABLE_RUNTIME_COUPLED = .TRUE./
+w
+q
+eof
+fi
+
+###test
+#python ~/scripts/perturbIC.py -a 0.05 ${outputdir}/${RUNID}.astart
+
+
+#
+## 3.2 pre-processing: provide and update the required namelists
+#
+
+dt_cpl_ai_hrs=3	#coupling interval in hours (A<=>I)
+
+(( dt_cpl_ai = $dt_cpl_ai_hrs * 3600 ))
+
+dt_cpl_io=1800	#coupling interval in seconds (I<=>O): .5 hour
+dt_ice=1800	#ice model timestep
+dt_ocn=1800     #ocn model timestep
+dt_atm=1800     #atm model timestep
+
+#duration (no of years) so far.
+#dyear=`expr $year - $iniyear`
+(( dyear = ${year} - $iniyear ))
+echo YES
+echo years of integration done: $dyear
+if (( $dyear >= 0 )); then     #increase dt_* from year 1.
+  dt_ice=3600
+  dt_ocn=3600
+  dt_cpl_io=3600
+fi
+
+# 3.2.1 namelist for oasis3:
+
+nlogprt=0 	#cplout writing control: 0-no, 1-medium, 2-full output
+npt1=${nproc_atm}; npc1=${ncplproc_atm}; arg1=$atm_exe; nam1=$atm_exe
+npt2=${nproc_ocn}; npc2=${ncplproc_ocn}; arg2=$ocn_exe; nam2=$ocn_exe
+npt3=${nproc_ice}; npc3=${ncplproc_ice}; arg3=$ice_exe; nam3=$ice_exe
+
+#
+# get and adapt file namcouple
+#
+
+cd $cplrundir
+
+cp -f $inputdir/oasis3-mct/namcouple_72fields_for_C-001-mct2-icefm-co2 namcouple
+
+ed namcouple <<eof
+g/#Mod1_name/s/#Mod1_name/ $nam1 /
+g/#Mod2_name/s/#Mod2_name/ $nam2 /
+g/#Mod3_name/s/#Mod3_name/ $nam3 /
+g/#Runtime_sec/s/#Runtime_sec/${runtime}/
+g/#NLOGPRT/s/#NLOGPRT/${nlogprt}/
+g/#CPL_intv_ao/s/#CPL_intv_ao/${dt_cpl_ao}/
+g/#CPL_intv_ai/s/#CPL_intv_ai/${dt_cpl_ai}/
+g/#CPL_intv_io/s/#CPL_intv_io/${dt_cpl_io}/
+g/#DT_OCN/s/#DT_OCN/${dt_ocn}/
+g/#DT_ATM/s/#DT_ATM/${dt_atm}/
+g/#DT_ICE/s/#DT_ICE/${dt_ice}/
+g/#UM_grid/s/#UM_grid/${um_grid}/
+w
+q
+eof
+#g/#DT_ICE/s/#DT_ICE/0/
+
+cp namcouple $atmrundir/
+cp namcouple $icerundir/
+cp namcouple $ocnrundir/
+
+# 3.2.2 namelists and input/control files for UM
+
+cd $atmrundir/tmp_ctrl
+export JOBDIR=`pwd`
+
+# a. fix date and runtime in control files
+# copy templates to tmp directory, point jobdir to tmp dir
+#cp $inputdir/um/jobs/Base20100827_CABLE17/* .
+
+cp -f $inputdir/um_control/access1.3/UAFLDS_A .
+cp -f $inputdir/um_control/access1.3/UAFILES_A .
+cp -f $inputdir/um_control/access1.3/SCRIPT .
+
+if [ $co2_flag = 0 ]; then
+  echo "this run is not for carbon cycle: PRESM_A and STASHC"
+  cp -f $inputdir/um_control/access1.3/PRESM_A_nocc PRESM_A
+  cp -f $inputdir/um_control/access1.3/STASHC_CABLE2co2_AMON2_SOMEDAILY STASHC
+  #CMIP5 full output
+  if [ $CMIP5RUN == "historical" ] || [ ${CMIP5RUN:0:3} == "ssp" ]; then
+    if [ $year -gt 1949 ] ; then #from year 1950
+      cp -f $inputdir/um_control/access1.3/STASHC_CABLE2co2_ALL STASHC
+    fi
+  else
+    if [ $year -gt 0359 ] ; then #from year 0360
+      cp -f $inputdir/um_control/access1.3/STASHC_CABLE2co2_ALL STASHC
+    fi
+  fi
+
+  else
+    echo "this run is for carbon cycle: PRESM_A and STAHC"
+    cp /g/data1a/p66/txz599/data/ctrl_files/PRESM_A_vaoid_nflux PRESM_A
+    # STASH control run (and all other experiments not covered in the following)
+    cp -f /g/data1a/p66/txz599/data/ctrl_files/STASHC_picontrol_min_cmip6 STASHC
+    # STASH historical run
+    if [ $CMIP5RUN == "historical" ]; then
+      cp -f /g/data1a/p66/txz599/data/ctrl_files/STASHC_CABLE2_esm-hist_s1v4_TZ STASHC
+      if [ $year -gt 1949 ] ; then #from year 1950
+        cp -f /g/data1a/p66/txz599/data/ctrl_files/STASHC_CABLE2_esm_hist_s2v4_TZ STASHC
+      fi
+    fi
+    if [ ${CMIP5RUN:0:3} == "ssp" ]; then
+#      cp -f /g/data1a/p66/txz599/data/ctrl_files/STASHC_CABLE2_ssp585_v1 STASHC
+      cp -f /g/data1a/p66/txz599/data/ctrl_files/STASHC_CABLE2_esm_hist_s2v4_TZ STASHC
+    fi
+fi  #if [ $co2_flag = 0 ]; then
+
+#----------------------------------------------
+#mv CNTLALL.template_GregMonMean CNTLALL
+cp -f $inputdir/um_control/access1.3/CNTLALL.template_GregMonMean CNTLALL
+ed ${JOBDIR}/CNTLALL <<eof
+g/REPLACE_RUNLENGTH/s/REPLACE_RUNLENGTH/ 0 , 0 , ${days_in_run} , 0 , 0 , 0 ,/
+g/REPLACE_RESUBMIT_INC/s/REPLACE_RESUBMIT_INC/ 0 , 0 , ${days_in_run} , 0 , 0 , 0 ,/
+g/REPLACE_BASIS_TIME/s/REPLACE_BASIS_TIME/ ${year} , ${month} , ${day} , 0 , 0 , 0 ,/
+w
+q
+eof
+
+### CONTCNTL is NOT actually used but need be around. ###
+#mv CONTCNTL.template CONTCNTL
+cp -f $inputdir/um_control/access1.3/CONTCNTL.template CONTCNTL
+
+if [ $co2_flag = 0 ]; then
+  echo "this run is not for carbon cycle: SIZES"
+cp -f $inputdir/um_control/access1.3/SIZES.template SIZES
+else
+  echo "this run is for carbon cycle: SIZES"
+#cp /short/p66/txz599/ACCESSHOME/umui_atm_only/new_input/SIZES.template_casa-cnp_uabwb SIZES
+cp -f $inputdir/um_control/access1.3/SIZES.template_casa-cnp_uabwb SIZES
+fi #if [ $co2_flag = 0 ];
+
+
+#set NANCIL_LOOKUPSA=100000 to fix "INANCILA: Insufficient space for LOOKUP headers"
+ed ${JOBDIR}/SIZES <<eof
+g/REPLACE_RUNLENGTH/s/REPLACE_RUNLENGTH/ 0 , 0 , ${days_in_run} , 0 , 0 , 0 ,/
+/NANCIL_LOOKUPSA/
+d
+i
+ NANCIL_LOOKUPSA=100000,
+.
+w
+q
+eof
+
+cp -f $inputdir/um_control/access1.3/CNTLGEN.template_GregMonMean CNTLGEN
+ed CNTLGEN <<eof
+g/REPLACE_DUMPFREQ/s/REPLACE_DUMPFREQ/-9999/
+w
+q
+eof
+#
+#FW_STD=0.85	#Zhian's choice (original default is 0.75. Important for temperature tuning!)
+FW_STD=0.725	#The bigger FW_STD, the warmer SST!
+#
+# Read in ICPP AR5/CMIP5 GHG emission rate from data file:
+#
+#cp -f $inputdir/um_control/access1.3/HistGHGm_1850-2005_v2.dat .
+cp -f /g/data1a/p66/txz599/data/ancil/CMIP6/trgas_rcp_historical_ESM.dat .
+cmip_year=1850	# which year
+#grep "${cmip_year}\." HistGHGm_1850-2005_v2.dat | read yyyy CO2_MMR CH4MMR N2OMMR C11MMR C12MMR C113MMR HCFC22MMR HFC125MMR HFC134AMMR
+grep "${cmip_year}\." trgas_rcp_historical_ESM.dat | read yyyy CO2_MMR CH4MMR N2OMMR C11MMR C12MMR C113MMR HCFC22MMR HFC125MMR HFC134AMMR
+
+#CMIP5 GHG emission rate for specific years:
+#YEARS        CO2          CH4          N2O         CFC_11     CFC_12       CFC_113       HCFC_22     HFC125       HFC134a
+#1850.   4.32598E-04  4.38078E-07  4.18499E-07  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00
+#.....
+#2000.   5.60436E-04  9.69791E-07  4.79924E-07  1.24939E-09  2.24183E-09  5.33776E-10  4.10164E-10  5.50282E-12  4.91909E-11
+#.....
+
+echo Confirming GHG: $yyyy $CO2_MMR $CH4MMR $N2OMMR $C11MMR $C12MMR $C113MMR $HCFC22MMR $HFC125MMR $HFC134AMM
+
+if [ $CMIP5RUN == "pi4xCO2" ]; then
+  (( CO2_MMR = CO2_MMR*4 ))
+  echo CO2_MMR = $CO2_MMR
+fi
+
+if [ $co2_flag = 0 ]; then ### not being used at the moment ###
+  echo "this run is not for carbon cycle: CNTLATM"
+  if [ $CMIP5RUN == "historical" ] || [ $CMIP5RUN == "rcp45" ] ; then  #historical or RCP4.5
+    cp -f $inputdir/um_control/access1.3/CNTLATM_hist_template CNTLATM
+  elif [ $CMIP5RUN == "rcp85" ]; then  #RCP8.5
+    cp -f $inputdir/um_control/access1.3/CNTLATM_hist_rcp85_template CNTLATM
+  elif [ $CMIP5RUN == "rcp26" ]; then  #RCP2.6
+    cp -f $inputdir/um_control/access1.3/CNTLATM_hist_rcp26_template CNTLATM
+  elif [ $CMIP5RUN == "picontrolv" ] || [ $CMIP5RUN == "pi4xCO2" ]; then  #picontrol with volcanic forcing
+    cp -f $inputdir/um_control/access1.3/CNTLATM_pictl_volc_template CNTLATM
+  elif [ $CMIP5RUN == "pi1pcntCO2" ]; then  #picontrol with volcanic forcing and 1% per year CO2 increment
+    cp -f $inputdir/um_control/access1.3/CNTLATM_pictl_volc_1pcntCO2_template CNTLATM
+  else #picontrol without volcanic forcing
+    cp -f $inputdir/um_control/access1.3/CNTLATM_pictl_template CNTLATM
+  fi
+else #carbon cycle is on
+  echo "this run is for carbon cycle: CNTLATM"
+  if [ $CMIP5RUN == "historical" ] ; then
+    cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_hist_template_CMIP6_1004 CNTLATM
+  elif [ $CMIP5RUN == "ssp1" ]; then  # ssp1-2.6
+    if (( $year < 2101 )); then
+      cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_ssp126_template_CMIP6 CNTLATM
+    else
+      cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_ssp126_ext_template_CMIP6 CNTLATM
+    fi
+  elif [ $CMIP5RUN == "ssp2" ]; then  # ssp2-4.5
+    cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_ssp245_template_CMIP6 CNTLATM
+  elif [ $CMIP5RUN == "ssp3" ]; then  # ssp3-7.0
+    cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_ssp370_template_CMIP6 CNTLATM
+  elif [ $CMIP5RUN == "ssp5" ]; then # ssp5-8.5
+    cp -f /g/data1a/p66/txz599/data/ctrl_files/CNTLATM_ssp585_template_CMIP6 CNTLATM
+  elif [ $CMIP5RUN == "picontrolv" ] || [ $CMIP5RUN == "pi4xCO2" ]; then  #picontrol with volcanic forcing
+    cp -f $inputdir/um_control/access1.3/CNTLATM_pictl_volc_template_casa-cnp CNTLATM
+  elif [ $CMIP5RUN == "pi1pcntCO2" ]; then  #picontrol with volcanic forcing and 1% per year CO2 increment
+    cp -f $inputdir/um_control/access1.3/CNTLATM_pictl_volc_1pcntCO2_template_casa-cnp CNTLATM
+  else #picontrolv
+    cp $inputdir/um_control/access1.3/CNTLATM_pictl_volc_template_casa-cnp CNTLATM
+  fi
+
+cp -f $inputdir/um_control/access1.3/INITHIS.template.cmip5-YYYY INITHIS
+
+if [ $co2_interactive = 1 ]; then
+ed CNTLATM << eof
+/L_CO2_INTERACTIVE
+d
+i
+ L_CO2_INTERACTIVE=.TRUE.,
+ L_CO2_RADIATION=.TRUE.,
+ L_CO2_MASS=.TRUE.,
+.
+wq
+eof
+ed CONTCNTL << eof
+/L_CO2_INTERACTIVE
+d
+i
+ L_CO2_INTERACTIVE=.TRUE.,
+.
+wq
+eof
+fi #if [ $co2_interactive = 1 ]
+
+if [ $co2_emits = 1 ]; then
+ed CNTLATM << eof
+/L_CO2_EMITS
+d
+i
+ L_CO2_EMITS=.TRUE.,
+.
+/UPANCA/
+a
+ &UPANCA ANC_REF_NO=78, PERIOD=4, INTERVAL=1 /
+.
+wq
+eof
+ed CONTCNTL << eof
+/L_CO2_EMITS
+d
+i
+ L_CO2_EMITS=.TRUE.,
+.
+wq
+eof
+# Use a link here to avoid having a string > 80 characters
+ed INITHIS << eof
+/CO2EMITS= 'CO2EMITS : ',
+d
+i
+ CO2EMITS= 'CO2EMITS : ${exphome}/CO2_flux.anc',
+.
+wq
+eof
+
+fi #if [ $co2_emits = 1 ]
+
+fi #if [ $co2_flag = 0 ]
+
+ed CNTLATM <<eof
+g/REPLACE_DT_CPL_AI/s/REPLACE_DT_CPL_AI/${dt_cpl_ai_hrs}/
+g/#REPL_RIVER_STEP/s/#REPL_RIVER_STEP/${dt_cpl_ai}/
+g/#FW_STD/s/#FW_STD/${FW_STD}/
+g/#CO2_MMR/s/#CO2_MMR/${CO2_MMR}/
+g/#N2OMMR/s/#N2OMMR/${N2OMMR}/
+g/#CH4MMR/s/#CH4MMR/${CH4MMR}/
+g/#C11MMR/s/#C11MMR/${C11MMR}/
+g/#C12MMR/s/#C12MMR/${C12MMR}/
+g/#C113MMR/s/#C113MMR/${C113MMR}/
+g/#HCFC22MMR/s/#HCFC22MMR/${HCFC22MMR}/
+g/#HFC125MMR/s/#HFC125MMR/${HFC125MMR}/
+g/#HFC134AMMR/s/#HFC134AMMR/${HFC134AMMR}/
+w
+q
+eof
+
+## cp -f $inputdir/um_control/access1.3/INITHIS.template.cmip5-YYYY INITHIS
+
+set_aerosols_by_year
+
+# decide which year aerosol data is used:
+ed INITHIS <<eof
+/OZONE=/
+d
+i
+ OZONE= 'OZONE : \$CMIP5ANCIL_AEROSOL/$OZONE_AFILE',
+.
+/SULPEMIS=/
+d
+i
+ SULPEMIS= 'SULPEMIS : \$CMIP5ANCIL_AEROSOL/$SULP_AFILE',
+.
+/SOOTEMIS=/
+d
+i
+ SOOTEMIS= 'SOOTEMIS : \$CMIP5ANCIL_AEROSOL/$SOOT_AFILE',
+.
+/BIOMASS=/
+d
+i
+ BIOMASS= 'BIOMASS : \$CMIP5ANCIL_AEROSOL/$BIO_AFILE',
+.
+/OCFFEMIS=/
+d
+i
+ OCFFEMIS= 'OCFFEMIS : \$CMIP5ANCIL_AEROSOL/$OCFF_AFILE',
+.
+w
+q
+eof
+
+
+# nitrogen deposition
+if [ $ndep_flag = 1 ]; then
+PATH=~access/umdir/vn7.3/normal/exec_esm_ndep:$PATH
+
+ed CNTLATM <<\EOF
+/UPANCA/
+a
+ &UPANCA ANC_REF_NO=208, PERIOD=2, INTERVAL=1 /
+.
+w
+q
+EOF
+
+if (( $year < 1850 )); then
+
+ed INITHIS <<\EOF
+/OCFFEMIS/
+a
+NDEPFIL= 'NDEPFIL  : /g/data1a/p66/txz599/data/ancil/CMIP6/Ndep_1850_ESM1.anc',
+.
+w
+q
+EOF
+
+elif (( $year < 2014 )); then
+
+ed INITHIS <<\EOF
+/OCFFEMIS/
+a
+ NDEPFIL= 'NDEPFIL  : /g/data1a/p66/txz599/data/ancil/CMIP6/Ndep_1849_2015.anc',
+.
+w
+q
+EOF
+
+else # ssps
+
+if [ $CMIP5RUN == "ssp1" ]; then  # ssp1-2.6
+if (( $year < 2101 )); then
+ed INITHIS <<\EOF
+/OCFFEMIS/
+a
+ NDEPFIL= 'NDEPFIL  : /g/data1a/p66/txz599/data/ancil/CMIP6/Ndep_2014_2101_ssp126.anc',
+.
+w
+q
+EOF
+else
+ed INITHIS <<\EOF
+/OCFFEMIS/
+a
+ NDEPFIL= 'NDEPFIL  : /g/data1a/p66/txz599/data/ancil/CMIP6/Ndep_2100_ssp126.anc',
+.
+w
+q
+EOF
+fi
+elif [ $CMIP5RUN == "ssp2" ]; then  # ssp2-4.5
+ed INITHIS <<\EOF
+/OCFFEMIS/
+a
+ NDEPFIL= 'NDEPFIL  : /g/data1a/p66/txz599/data/ancil/CMIP6/Ndep_2014_2101_ssp245.anc',
+.
+w
+q
+EOF
+
+elif [ $CMIP5RUN == "ssp3" ]; then  # ssp3-7.0
+ed INITHIS <<\EOF
+/OCFFEMIS/
+a
+ NDEPFIL= 'NDEPFIL  : /g/data1a/p66/txz599/data/ancil/CMIP6/Ndep_2014_2101_ssp370.anc',
+.
+w
+q
+EOF
+
+elif [ $CMIP5RUN == "ssp5" ]; then # ssp5-8.5
+ed INITHIS <<\EOF
+/OCFFEMIS/
+a
+ NDEPFIL= 'NDEPFIL  : /g/data1a/p66/txz599/data/ancil/CMIP6/Ndep_2014_2101_ssp858.anc',
+.
+w
+q
+EOF
+
+else #picontrolv
+ed INITHIS <<\EOF
+/OCFFEMIS/
+a
+NDEPFIL= 'NDEPFIL  : /g/data1a/p66/txz599/data/ancil/CMIP6/Ndep_1850_ESM1.anc',
+.
+w
+q
+EOF
+fi
+
+
+fi
+
+ed UAFLDS_A <<\EOF
+/H4| TYPE=ANCIL_FIELDS/
+a
+#
+#|Ref No|Model |Sect  | Item | Name                               |
+#|File N|
+#
+#===============================================================================
+#
+1|  208 |    1 |    0 |  884 |Stash code = 884                    |
+2|   68 |
+#
+#===============================================================================
+.
+w
+q
+EOF
+
+ed UAFILES_A <<\EOF
+/H4| TYPE=ANCIL_FILES/
+a
+#
+#|FileN |Model|Env Vr  |Title                                    |
+#
+#===============================================================================
+#
+1|   68 |   1 |NDEPFIL |NITROGEN DEPOSITION                      |
+#
+#===============================================================================
+.
+w
+q
+EOF
+
+fi #if [ $ndep_flag = 1 ]
+
+
+# b. namelist for coupling
+VOLCTS=97.33
+if (( $year < 1850 )); then # mean volcanic forcing for PI run
+  VOLCTS=133.8
+fi
+if (( $year > 2300 )); then    #fix VOLCTS to 97 from year 2301
+  VOLCTS=97.0
+fi
+
+cd $atmrundir
+cat > input_atm.nml << eof
+&coupling
+ access_tfs=-1.8
+ xfactor=1.0
+ SC=1365.65
+ co2_init=284.725
+ VOLCTS_val=${VOLCTS}
+ ocn_sss=.false.
+ sdump_enable=.false.
+ rdump_enable=.false.
+&end
+eof
+
+
+# 3.2.3 namelists for cice
+
+cd $icerundir
+
+# a. standalone mode input
+#
+npt_cice=`expr $runtime / $dt_ice`
+if [ $jobnum = 1 ]; then
+  if (( $cold_start == 1 )); then
+    runtype="'initial'"
+    Lrestart=.false.; ice_ic="'default'"
+  else
+  #---------------------------------------------------------------------------
+  #20100403: start from an existing AusCOM run restart (core-g16, eoy 0200)
+    runtype="'initial'"
+    Lrestart=.true.; ice_ic="'default'"
+  fi 	#cold_start
+  #---------------------------------------------------------------------------
+else
+  runtype="'continue'"
+  Lrestart=.true.; ice_ic="'default'"
+fi
+
+if [ $nmonth != 0 ]; then               #ie, nmonth=1, a whole month run
+#   histfreq="'m'"; hist_avg=.true.; dumpfreq="'m'"; dumpfreq_n=$nmonth
+# MRD  Monthly dumping for now
+  histfreq="'m','x','x','x','x'"; hist_avg=.true.; dumpfreq="'m'"; dumpfreq_n=1
+else                                    #ie, nmonth=0, an nday run
+  histfreq="'d','x','x','x','x'"; hist_avg=.true.; dumpfreq="'d'"; dumpfreq_n=$nday
+fi                      #hist_avg=.false. would output snapshot hist
+#
+mixedocean=.false.      #use or not use the mixed ocean layer
+#
+# variables related to ice thickness sensitivity
+#
+
+# conductivity MU71 or bubbly
+conduct="'bubbly'"
+# ridging folding scale default 4
+mu_rdg=3
+# turning angle default 0 degrees
+cosw=0.96
+sinw=0.28
+# shortwave parametrisation default or dEdd
+shortwave="'default'"
+# dEdd tuning parameters defs 0.
+R_ice=0.
+R_pnd=0.
+R_snw=0.
+# albedos for ice default 0.78 and 0.36
+albicev=0.86
+albicei=0.44
+# albedos for snow default 0.78 and 0.36
+albsnowv=0.98
+albsnowi=0.70
+# snowpatchiness default 0.02
+snowpatch=0.01
+# change in temperature to give dalb_mlt change default 1.0
+dT_mlt=1.0
+# albedo change per dT_mlt change in temperature default -0.05
+dalb_mlt=-0.02
+# maximum thickness of ice that rafts (m) default 1.0
+maxraft=0.5
+# thickness above which ice albedo is constant (m) default 0.5
+ahmax=0.1
+# albedo weigths
+# visible, direct default 0.00318
+awtvdr=0.00318
+# near IR, direct default 0.00182
+awtidr=0.00182
+# visible, diffuse default 0.63282
+awtvdf=0.63282
+# near IR, diffuse default 0.36218
+awtidf=0.36218
+# linear_S or constant freezing temp, default linear_S
+Tfrzpt="'linear_S'"
+# minimum ice-ocean friction velocity def. 0.005
+ustar_min=0.0005
+# Freezing point of ocean water def -1.8
+Tocnfrz=-1.8
+# ice-ocean drag def. 0.00536
+dragio=0.00536
+# ice-ocean heat transfer coefficient def. 0.004
+chio=0.004
+# ice surfare roughness length, def 0.0005 m
+iceruf=0.0005
+
+#cp -f $inputdir/cice/cice4.1_in.nml_0layer_for_C-001-20110218     cice_in.nml
+#cp -f $inputdir/cice/cice4.1_in.nml_0layer_for_C-006	cice_in.nml
+#cp -f $inputdir/cice/cice4.1_in.nml_0layer_cmip5        cice_in.nml
+#cp -f $inputdir/cice/cice4.1_in.nml_0layer_cmip5_monthly_20130226	cice_in.nml
+cp -f /g/data1a/p66/txz599/data/cice/cice4.1_ESM_nml_20190702 cice_in.nml
+if [ $CMIP5RUN == "historical" ]; then
+   cp -f /g/data1a/p66/txz599/data/cice/cice4.1_ESM_nml_20190702 cice_in.nml
+   if [ $year -gt 1949 ] ; then #from year 1950
+      cp -f /g/data1a/p66/txz599/data/cice/cice4.1_ESM_daily_nml_20190702 cice_in.nml
+   fi
+fi
+
+ed cice_in.nml <<eof
+g/#DAYS_per_year/s/#DAYS_per_year/${days_this_year}/
+g/#YEAR_init/s/#YEAR_init/${iniyear}/
+g/#DT_CICE/s/#DT_CICE/${dt_ice}/
+g/#NPT/s/#NPT/${npt_cice}/
+g/#RUNTYPE/s/#RUNTYPE/${runtype}/
+g/#HISTFREQ/s/#HISTFREQ/${histfreq}/
+g/#HIST_AVG/s/#HIST_AVG/${hist_avg}/
+g/#DUMPFREQ/s/#DUMPFREQ/${dumpfreq}/
+g/#DUMPFR_N/s/#DUMPFR_N/${dumpfreq_n}/
+g/#RESTART/s/#RESTART/${Lrestart}/
+g/#ICE_IC/s/#ICE_IC/${ice_ic}/
+g/#FYEAR_init/s/#FYEAR_init/${iniyear}/
+g/#MIXEDOCN/s/#MIXEDOCN/${mixedocean}/
+g/#NPROCS/s/#NPROCS/${nproc_ice}/
+g/#MU_RDG/s/#MU_RDG/${mu_rdg}/
+g/#CONDUCT/s/#CONDUCT/${conduct}/
+g/#SHORTWAVE/s/#SHORTWAVE/${shortwave}/
+g/#R_ICE/s/#R_ICE/${R_ice}/
+g/#R_PND/s/#R_PND/${R_pnd}/
+g/#R_SNW/s/#R_SNW/${R_snw}/
+g/#SNOWPATCH/s/#SNOWPATCH/${snowpatch}/
+g/#AHMAX/s/#AHMAX/${ahmax}/
+g/#DT_MLT/s/#DT_MLT/${dT_mlt}/
+g/#DALB_MLT/s/#DALB_MLT/${dalb_mlt}/
+g/#MAXRAFT/s/#MAXRAFT/${maxraft}/
+g/#ALBICEI/s/#ALBICEI/${albicei}/
+g/#ALBICEV/s/#ALBICEV/${albicev}/
+g/#ALBSNOWI/s/#ALBSNOWI/${albsnowi}/
+g/#ALBSNOWV/s/#ALBSNOWV/${albsnowv}/
+g/#AWTVDF/s/#AWTVDF/${awtvdf}/
+g/#AWTIDF/s/#AWTIDF/${awtidf}/
+g/#AWTVDR/s/#AWTVDR/${awtvdr}/
+g/#AWTIDR/s/#AWTIDR/${awtidr}/
+g/#TFRZPT/s/#TFRZPT/${Tfrzpt}/
+g/#COSW/s/#COSW/${cosw}/
+g/#SINW/s/#SINW/${sinw}/
+g/#USTAR_MIN/s/#USTAR_MIN/${ustar_min}/
+g/#TOCNFRZ/s/#TOCNFRZ/${Tocnfrz}/
+g/#DRAGIO/s/#DRAGIO/${dragio}/
+g/#CHIO/s/#CHIO/${chio}/
+g/#ICERUF/s/#ICERUF/${iceruf}/
+g/slenderX2/s/slenderX2/slenderX1/
+w
+q
+eof
+#g/slenderX2/s/slenderX2/square-ice/
+
+# b. namelist for coupling purpose
+#
+
+# calculate ice formation with MOM or POP approach. main difference: if ice forms,
+# mom4 only adjusts ocn water temp, but POP adjusts both temp and salinity (which
+# may be of problem ......)
+
+POP_ICEDIAG='.true.'                    #use POP approach for ice formation/melting
+null_a2i_fluxes_time0='.false.'
+if [ $jobnum = 1 ]; then
+  null_a2i_fluxes_time0='.true.'
+fi
+cat > input_ice.nml << eof
+&coupling
+ caltype=$caltype
+ jobnum=$jobnum
+ inidate=$date
+ init_date=${iniyear}0101
+ runtime0=$truntime0
+ runtime=$runtime
+ dt_cpl_ai=$dt_cpl_ai
+ dt_cpl_io=$dt_cpl_io
+ dt_cice=$dt_ice
+ pop_icediag=$POP_ICEDIAG
+ ice_pressure_on=.true.
+ air_pressure_on=.false.
+ ice_fwflux=.true.
+ use_ocnslope=.false.
+ use_umask=.false.
+ rotate_winds=.true.
+ limit_icemelt=.false.
+ meltlimit=-200.0
+ chk_i2o_fields=.false.
+ chk_o2i_fields=.false.
+ chk_i2a_fields=.false.
+ chk_a2i_fields=.false.
+ use_core_runoff=.false.
+ gbm2pericearea=.true.
+ do_scale_fluxes=.false.
+ imsk_evap=.false.
+ extreme_test=.false.
+ restartdir='RESTART'
+ inputdir='INPUT'
+&end
+eof
+
+# 3.2.4 namelists for mom4p1
+
+cd $ocnrundir
+
+# 0. get field_table here (for some special treatment to some doggy points)
+#if [ $jobnum -eq 1 ]; then
+#  cp -f $inputdir/mom4/field_table_20110622 INPUT/field_table
+#else
+#  cp -f $inputdir/mom4/field_table_20110404 INPUT/field_table
+#fi
+
+# a. standalone mode input namelist file
+#
+#cp -f $inputdir/mom4/mom4_in_20130227_fm-co2.nml	input.nml
+cp -f /g/data1a/p66/txz599/data/ocn/input_dec18_180c.nml input.nml
+
+#
+alap=1.0e5
+
+if [ $cold_start == 1 ]; then
+  truncate_velocity='.true.'
+  truncate_verbose='.true.'
+  if [[ $year -gt $iniyear ]]; then
+   truncate_velocity='.false.'
+   truncate_verbose='.false.'
+  fi
+else
+  truncate_velocity='.false.'
+  truncate_verbose='.false.'
+fi
+#20100412: restore SST for 10 years -------------------------------------
+if [ $dyear -lt 6 ]; then       #year1-6
+  tscale=10.0
+elif [ $dyear -lt 8 ]; then     #year7-8
+  tscale=15.0
+elif [ $dyear -lt 9 ]; then     #year 9
+  tscale=20.0
+elif [ $dyear -lt 10 ]; then    #year 10
+  tscale=30.0
+else                            #year 11-->
+  tscale=-1.0
+fi
+temp_restore_tscale=$tscale     #SST restoring time scale (days)
+echo date : $date
+echo dyear: $dyear
+#
+temp_restore_tscale=-1.0        #NO sst restoration!
+#
+if [ $temp_restore_tscale -gt 0 ]; then
+  cp -f $inputdir/mom4/temp_sfc_restore.nc $ocnrundir/
+fi
+#salt_restore_tscale=60.0        #SSS restoring time scale of 60 days
+salt_restore_tscale=-1.0
+if [ $salt_restore_tscale -gt 0 ]; then
+  cp -f $inputdir/mom4/salt_sfc_restore.nc $ocnrundir/
+fi
+
+#
+layout=$oce_nx,$oce_ny		#mpi partitioning pattern
+#
+Simple_frazil='.false.'         #simple temp frazil. if '.f.' use complicated scheme
+                                #                    and allow multi-layer frazil.
+Accurate_frazil='.true.'        #accurate temp frazil. must be .t. if Simple_frazil=.f.
+                                #                    vice versa.
+TL_frazil='.false.'             #top layer frazil. if '.f.' multi-layer frazil
+
+#new tuning parameters as in core-g16
+#diff_cbt_iw=5.0e-6	#'background diffusion' when BL profile is NOT used.
+                                # 1.e-4 m2/s is the default value
+#visc_cbu_iw=1.0e-4	#'BG' vertical viscosity
+#with tidal mixing (therefore NO explicit convection), we use
+diff_cbt_iw=0.0
+visc_cbu_iw=0.0
+
+max_drag_diff=5.0e-3	# max_drag_diffusion for tidal mixing (default 5.0e-3)
+
+#20110510: turn off explicit convection since 00030701. As per Steve and Simon, we should
+#          only allow KPP to take care of convection (in an 'implicit' way).
+#********************#
+convection='.false.'
+#********************#
+#!!! because of the IC salinity 'error' in bottotm Arctic, explicit convection is needed
+#!!! at the beginning to stablise that region. otherwise the instability would spread and
+#!!! crash mom4p1 after a few timesteps (i.e., step=15) in the first day of the run !
+#if [ $jobnum = 1 ]; then
+#  convection='.true.'
+#fi
+#----------------------------------------------------------------------------------------
+#20110518: new, "correct" IC (20110518/17 version) solves the instability error !
+#          therefore there is NO need to turn on explicit convection at all     !
+#----------------------------------------------------------------------------------------
+
+aredi=600.
+aredi_equal_agm='.false.'
+agm=600.
+ricr=0.3
+ocean_mixdownslope='.true.'
+#smax=0.01
+#swidth=0.001  #typically, smax * 0.1
+#smax=0.002
+#swidth=0.0002  #typically, smax * 0.1
+agm_closure='.true.'
+min_agm=50.
+max_agm=600.
+
+#
+#20100414: use_waterflux = .t. and salt_restore_as_salt_flux = .t. (as recommended)
+#
+use_waterflux='.true.'
+#
+ed input.nml <<eof
+g/#NMONTH/s/#NMONTH/${nmonth}/
+g/#NDAY/s/#NDAY/${nday}/
+g/#SYEAR/s/#SYEAR/${iniyear}/
+g/#SMON/s/#SMON/${inimonth}/
+g/#SDAY/s/#SDAY/${iniday}/
+g/#CAL_TYPE/s/#CAL_TYPE/${cal_type}/
+g/#DT_CPL/s/#DT_CPL/${dt_cpl_io}/
+g/#DT_OCE/s/#DT_OCE/${dt_ocn}/
+g/#LAYOUT/s/#LAYOUT/${layout}/
+g/#VLIMIT/s/#VLIMIT/${truncate_velocity}/
+g/#VWARN/s/#VWARN/${truncate_verbose}/
+g/#SST_restoring/s/#SST_restoring/${temp_restore_tscale}/
+g/#SSS_restoring/s/#SSS_restoring/${salt_restore_tscale}/
+g/#Freezing_simple/s/#Freezing_simple/${Simple_frazil}/
+g/#Freezing_accurate/s/#Freezing_accurate/${Accurate_frazil}/
+g/#TL_frazil_only/s/#TL_frazil_only/${TL_frazil}/
+g/#DIFF_CBT_IW/s/#DIFF_CBT_IW/${diff_cbt_iw}/
+g/#VISC_CBU_IW/s/#VISC_CBU_IW/${visc_cbu_iw}/
+g/#MAX_DRAG_DIFF/s/#MAX_DRAG_DIFF/${max_drag_diff}/
+g/#CONVECTION/s/#CONVECTION/${convection}/
+g/#AREDI/s/#AREDI/${aredi}/
+g/#aredi_eq_agm/s/#aredi_eq_agm/${aredi_equal_agm}/
+g/#AGM/s/#AGM/${agm}/
+g/#RICR/s/#RICR/${ricr}/
+g/#OCEAN_MIXDOWNSLOPE/s/#OCEAN_MIXDOWNSLOPE/${ocean_mixdownslope}/
+g/#agm_closure/s/#agm_closure/${agm_closure}/
+g/#SMAX/s/#SMAX/${smax}/
+g/#SWIDTH/s/#SWIDTH/${swidth}/
+g/#MIN_AGM/s/#MIN_AGM/${min_agm}/
+g/#MAX_AGM/s/#MAX_AGM/${max_agm}/
+g/#USE_waterflux/s/#USE_waterflux/${use_waterflux}/
+g/background_diffusivity=5.0e-6/s/background_diffusivity=5.0e-6/background_diffusivity=1.0e-5/
+w
+q
+eof
+
+# b. namelist for coupling purpose
+#
+
+#cat >> input.nml << eof
+#&auscom_ice_nml
+# dt_cpl=$dt_cpl_io
+# pop_icediag=$POP_ICEDIAG
+# do_ice_once=.false.
+# kmxice=1
+# fixmeltT=.false.
+# Tmelt=-1.0
+# limit_srfstress=.false.
+# Mstress=5.0
+# use_ioaice=.true.
+# aice_cutoff=0.15
+# icemlt_factor=1.0
+# frazil_factor=1.0
+# iceform_adj_salt=.false.
+# wfi_factor=1
+# wfo_adj=0
+# sign_stflx=1.0
+# redsea_gulfbay_sfix=.true.
+# chk_i2o_fields=.false.
+# chk_o2i_fields=.false.
+# sfix_hours=24
+# irs2=325
+# ire2=328
+# igs=328
+# ige=341
+#/
+
+#&bg_diff_lat_dependence_nml
+# lat_low_bgdiff=20.
+# bg_diff_eq=1.0e-6
+#/
+#eof
+if [ ! -f data_table ]; then
+  ln -s INPUT/*table .
+fi
+
+# 4: create application context file for OpenMPI
+# This file will be used by mpirun (called from qsexecute) to launch
+# the coupled model
+#echo "--prefix /apps/openmpi/1.2.8" > "${RUNID}.app"
+#echo "-n 1 oasis3" > "${RUNID}.app"
+#echo "-n $npt1 $arg1" >> "${RUNID}.app"
+#echo "-n $npt2 $arg2" >> "${RUNID}.app"
+#echo "-n $npt3 $arg3" >> "${RUNID}.app"
+
+export OMPI_MCA_hwloc_base_mem_alloc_policy=local_only
+export NPERSOCKET=6
+
+PBS_NODEFILE=${PBS_NODEFILE:=""}
+if [ ! -z $PBS_NODEFILE ]; then
+
+cat $PBS_NODEFILE | uniq > allhosts.$PBS_JOBID.txt
+head -n 16 allhosts.$PBS_JOBID.txt > atmhosts.$PBS_JOBID.txt
+head -n -1 allhosts.$PBS_JOBID.txt | tail -n 7  > ocnhosts.$PBS_JOBID.txt
+#tail -n 8 allhosts.$PBS_JOBID.txt > ocnhosts.$PBS_JOBID.txt
+tail -n 1 allhosts.$PBS_JOBID.txt > icehosts.$PBS_JOBID.txt
+
+fi
+
+#optns="--npersocket $NPERSOCKET --bind-to-socket -mca orte_num_sockets 2 -mca orte_num_cores 8"
+# export ACCESSRUNCMD=" $optns --mca mpi_paffinity_alone 1 --mca mpi_leave_pinned 0 \
+#         -wd $atmrundir -n $nproc_atm -hostfile $ocnrundir/atmhosts.$PBS_JOBID.txt \
+#             $rundir/$atm_exe : \
+#         -wd $ocnrundir -n $nproc_ocn -hostfile $ocnrundir/ocnhosts.$PBS_JOBID.txt \
+#             $rundir/$ocn_exe : \
+#          -wd $icerundir -n $nproc_ice -hostfile $ocnrundir/icehosts.$PBS_JOBID.txt \
+#             $rundir/$ice_exe"
+
+export ACCESSRUNCMD="--mca mpi_paffinity_alone 1 \
+                     -wd $atmrundir -n $nproc_atm $rundir/$atm_exe : \
+                     -wd $ocnrundir -n $nproc_ocn $rundir/$ocn_exe : \
+                     -wd $icerundir -n $nproc_ice $rundir/$ice_exe"
+
+#export ACCESSRUNCMD="--prefix /app/openmpi/1.3.3 -n 1 oasis3 : -n $npt1 $arg1 : -n $npt2 $arg2 : -n $npt3 $arg3"
+
+source /opt/Modules/v4.3.0/init/ksh
+module unload openmpi
+module unload netcdf
+module load openmpi/4.0.2
+module load netcdf/4.7.1
+module list
