@@ -1,0 +1,293 @@
+# name: um73-xe-new.end
+# This script does post-processing and manages restart files ACCESS coupled run
+#
+# imported variables:
+# OASISRUNDIR
+
+cd $expdir
+
+# results processing only if run completed successfully
+if [[ $FCODE -eq 0 ]]; then
+        echo "Experiment completed OK, preparing next run"
+        # log the timesteps and coupling periods for the run
+        # to the $RUNID.tlog file
+        . tlog
+        #/home/599/dhb599/build/um7.3_precomp/tlog
+
+rundir=${OASISRUNDIR}
+cplrundir=$rundir/CPL_RUN
+atmrundir=$rundir/ATM_RUN
+icerundir=$rundir/ICE_RUN
+ocnrundir=$rundir/OCN_RUN
+
+# gol124: expdir replaces jobdir because JOBDIR is used by UM scripts
+expdir=$SYSTEMDIR/exp/${RUNID}
+#B: bindir=$HOME/build/ACCESS/bin
+bindir=~access/umdir/vn7.3/normal/cm1scripts/  #$SYSTEMDIR/bin
+archivedir=${SHORTDIR}/archive/${RUNID}
+
+cd $expdir
+
+# restore date variables from init script
+enddate=`cat calendar${RUNID}.out | cut -c '11-18'`
+nextdate=`cat calendar${RUNID}.out | cut -c '20-27'`
+days_in_run=`cat calendar${RUNID}.out | cut -c '38-45'`
+# another possibility:
+# enddate=`cat nextdate`
+# for UM:
+endyear=` echo "$enddate" | cut -c '1-4'`
+endmonth=` echo "$enddate" | cut -c '5-6'`
+endday=` echo "$enddate" | cut -c '7-8'`
+# for restart:
+nextyear=` echo "$nextdate" | cut -c '1-4'`
+nextmonth=` echo "$nextdate" | cut -c '5-6'`
+nextday=` echo "$nextdate" | cut -c '7-8'`
+
+# find out the ending of the dump file for enddate
+if [[ ${nextyear} -gt 1800 ]]; then
+  umdate=`${bindir}/datetoum ${nextyear} ${nextmonth} ${nextday} 0`
+else
+  umdate=`${bindir}/datetoum2 ${nextyear} ${nextmonth} ${nextday} 0`
+fi
+
+restartfile="aiihca.da${umdate}"
+# gol124: human-readable file names for UM dumps
+restartarch="${RUNID}.astart-${nextdate}"
+
+# archive results and restart files created in this run
+cd $cplrundir
+
+#
+## 5.1 Output files of the coupler (OASIS3)
+#
+
+# Restart files
+mkdir -p ${archivedir}/restart/cpl
+for resfile in `ls ?2?.nc`; do
+  mv $resfile ${archivedir}/restart/cpl/$resfile-${enddate}
+done
+
+#
+## 5.2 Output files of the atmosphere (UM)
+#
+
+module rm python2
+module load python2/2.7.16
+module use ~access/modules
+module load pythonlib/umfile_utils
+
+ncfile_prev="cableCMIP6_LC_${endyear}.nc"
+ncfile="cableCMIP6_LC_${nextyear}.nc"
+
+cd $atmrundir/
+# check the date
+if [ -f ${restartfile} ] ; then
+        validdate=`${bindir}/umdate -b64 ${restartfile} | cut --delimiter=" " --fields=8`
+        if [ ! ${validdate} = "${nextyear}-${nextmonth}-${nextday}" ] ; then
+          echo "The um restart file ${restartfile} has invalid date"
+          exit 1
+        fi
+        if (( $endyear < 2101 )); then
+          python /g/data/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 835 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile_prev ${restartfile}
+          python /g/data/p66/txz599/ACCESSESM1/scripts/um_replace_field_multilevel.py -v 216 -V fraction -n /g/data1a/p66/txz599/data/luc_ssp585/$ncfile ${restartfile}
+        fi
+        mv ${restartfile} ${archivedir}/restart/atm/${restartarch}
+else
+	echo "The UM restart file ${restartfile} not found!"
+        echo "This means the model most likely failed"
+        echo "Aborting post-processing"
+	exit 1
+fi
+# remove the other (older) atmospheric dumps
+rm -f aiihca.da*
+
+# move atmospheric monthly files to archive
+#mv aiihca.pe* ${archivedir}/atm
+# gol124: move and rename to human readable form
+for fmonth in `ls aiihca.p?*`; do
+        sdate=`${bindir}/umdate -b64 ${fmonth} | cut --delimiter=" " --fields=8 | cut --delimiter="-" --output-delimiter=\0 --fields=1-3 `
+        mv ${fmonth} ${archivedir}/history/atm/${RUNID}.p${fmonth:8:1}-${sdate}
+done
+
+#
+## 5.3 Output files of the ice (cice)
+#
+
+cd $icerundir
+# Restart files
+
+#20100130: now w have extra 'restart' file mice.nc
+mv mice.nc ${archivedir}/restart/ice/mice.nc-${enddate}
+
+cd $icerundir/RESTART
+mv ice.restart_file ${archivedir}/restart/ice/ice.restart_file-${enddate}
+mv iced.* ${archivedir}/restart/ice/
+cd ..
+
+# History files (iceh_*.nc)
+cd $icerundir/HISTORY
+for histfile in `ls ice*`; do
+  mv -f ${histfile} ${archivedir}/history/ice
+done
+
+#
+## 5.4 Output files of the ocean (mom4)
+#
+
+# Restart files
+cd $ocnrundir/RESTART
+#mkdir -p ${archivedir}/mom/MOM4_restart_${enddate}
+#mv ocean_* ${archivedir}/mom/MOM4_restart_${enddate}
+for restfile in `ls *.res*`; do
+  mv ${restfile} ${archivedir}/restart/ocn/${restfile}-${enddate}
+done
+
+# History files
+cd $ocnrundir/HISTORY
+
+tdir=${archivedir}/history/ocn
+# Move ocean history output to archive dir in preparation for mppncombine job.
+# Append enddate so that delayed post-processing doesn't cause overwrites.
+# Files that don't require merging (e.g. scalar)
+for ncfile in *.nc; do
+    mv -f $ncfile $tdir/${ncfile}-${enddate}
+done
+for ncfile in *.nc.????; do
+    mv -f $ncfile $tdir/${ncfile}-${enddate}
+done
+
+cd $expdir  # So the qsub output files appear in the right place.
+qsub -v ARCHIVE_DIR=$tdir,ENDDATE=$enddate /g/data/access/projects/access/data/ACCESS_CMIP5/utils/do_combine_mom5_cmip6.sh
+
+#
+## 5.5 Coupling fields output (if any), e.g., fields_i2o_in_ice.nc etc.
+#
+for subrundir in $atmrundir $icerundir $ocnrundir; do
+cd $subrundir
+if [[ `ls fields*.nc | wc -w` -gt 0 ]]; then
+for tmpfile in `ls fields*.nc`; do
+  mv -f ${tmpfile} ${archivedir}/restart/cpl/${tmpfile}_${enddate}
+done
+fi
+done
+#############################################################################
+#
+# 6. Submission of the next job
+#
+#############################################################################
+
+cd  ${expdir}
+expid=$RUNID
+#
+# Number of the next job
+#
+(( nextjob = ${jobnum} + 1 ))
+
+#
+# update .date and .log file
+#
+(( runtime = ${days_in_run} * 86400 ))
+if [ -f ${expid}.date ]; then
+#  read year month day jobnum yruntime0 truntime0 < ${expid}.date
+  #read year month day jobnum truntime0 < ${expid}.date
+  #mv ${expid}.date  ${expid}.date_${jobnum}
+  tail -1 ${expid}.date | read year month day jobnum truntime0
+  echo "year month day jobnum truntime0": $year $month $day $jobnum $truntime0
+else
+#  yruntime0=0
+  truntime0=0
+  jobnum=1
+fi
+
+module purge
+export PYTHONPATH=  # The purge isn't enough
+module use /g/data/hh5/public/modules
+module load conda/analysis3-22.07
+# Update global mean CO2 and temperature for the current yeae
+python /g/data/p66/mrd599/AERA/aera_means_update.py $RUNID $archivedir $year
+if [[ $? != 0 ]]; then
+  echo "Error from aera_means_update.py"
+  exit 1
+fi
+# Update the CO2 emissions
+python  /g/data/p66/mrd599/AERA/aera_co2_update.py $RUNID $year
+if [[ $? != 0 ]]; then
+  echo "Error from aera__update.py"
+  exit 1
+fi
+#
+# Number of the next job
+#
+(( nextjob = ${jobnum} + 1 ))
+
+#(( yruntime0 = ${yruntime0} + ${runtime} ))
+#(( truntime0 = ${truntime0} + ${runtime} ))
+# --- the above computation 'overflows' when year reaches 70: on XE it yields
+#     truntime0 = 1.84467440716e+19
+#     instead of  2175984000 which is the correct number.
+#     this causes CICE not to output history files!
+#     ('cos calendar does not work properly with the wrong truntime0...)
+# --- we have to use the follwoing calculation to avoid the overflow problem:
+truntime0=`expr ${truntime0} + ${runtime}`
+#echo "${nextyear} ${nextmonth} ${nextday} ${nextjob} ${yruntime0} ${truntime0}" > ${expid}.date
+echo "${nextyear} ${nextmonth} ${nextday} ${nextjob} ${truntime0}" >> ${expid}.date
+
+rm calendar${RUNID}.in calendar${RUNID}.out
+
+echo "`date` :  ${jobnum} ${enddate} - done post-processing!" >> ${expid}.log
+
+#
+# Check whether final date is reached
+#
+if [[ $nextdate -gt $finaldate ]]; then
+	echo "Experiment over"
+	echo "`date` :  Experiment over" >> ${expid}.log
+elif [ -f ${expid}.suspend ] ; then
+	echo "Suspending experiment"
+	echo "`date` : ${jobnum} ${enddate} - Experiment suspended" >> ${expid}.log
+	echo "To resume execute this command: qsub um73-auscom.xe"
+else
+	next_jobid=`qsub $RUNID`
+        # next_jobid=`qsub -W depend=after:${archjob} ${RUNID}`
+	echo "Next run is submitted: ${next_jobid}" >> ${expid}.log
+	echo "`date` :  Next run is submitted: ${next_jobid}" >> ${expid}.log
+fi
+
+elif [[ ($FCODE -eq 1) || ($FCODE -eq 2) ]]; then
+        echo "Experiment aborted with a transient error"
+        echo "Resubmitting same run again"
+        next_jobid=`qsub ${RUNID}`
+        echo "Next run is submitted: ${next_jobid}" >> ${expid}.log
+        echo "`date` :  Next run is submitted: ${next_jobid}" >> ${expid}.log
+
+elif [[ ($FCODE -eq 3) || ($FCODE -eq 4) ]]; then
+        echo "Experiment aborted with a transient error"
+        echo "Re-try quota exceeded, suspending experiment"
+        echo "`date` : ${jobnum} ${enddate} - Experiment suspended" >> ${expid}.log
+        echo "To resume execute this command: qsub $RUNID"
+
+elif [[ $FCODE -eq 5 ]]; then
+        # log the timesteps and coupling periods for the run
+        # to the $RUNID.failed file
+        . tlog
+        #/home/599/dhb599/build/um7.3_precomp/tlog
+
+        echo "Experiment aborted due to some model error, suspending"
+        echo "To resume execute this command: qsub $RUNID"
+        echo "`date` : ${jobnum} ${enddate} - Experiment suspended" >> ${expid}.log
+
+else
+        echo "Experiment aborted with unknown error, suspending"
+        echo "To resume execute this command: qsub $RUNID"
+        echo "`date` : ${jobnum} ${enddate} - Experiment suspended" >> ${expid}.log
+
+fi # FCODE
+
+#############################################################################
+#
+# 7. Epilogue
+#
+#############################################################################
+
+date
+exit
