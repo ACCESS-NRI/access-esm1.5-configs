@@ -1,0 +1,381 @@
+#!/bin/ksh
+# Batch script for running UM coupled with AusCOM:
+# UM: vn7.3 on n96 grid
+# Platform: Raijin
+#
+# Things worth adjusting for different runs:
+# PBS options, especially number of nodes, PEs and cpu time
+# JOBDIR - src of files controling UM execution and STASH, defined in ACCESS_INIT
+#          it is used by UMScr_TopLevel to copy these files from
+# UM_NPES - number of PEs for UM, currently only 1 supported
+# UM_ATM_NPROCX=1 - number of PEs for UM, grid decomposition
+# UM_ATM_NPROCY=1   currently only 1 supported, nprocx*nprocy==npes
+# UM_MAIL_ID - to who send message about execution start/stop
+# UM_START_MAIL - logical flag to send email when starting
+# UM_END_MAIL - logical flag to send email when stopping
+# UM_ANCIL_A - source of start up data, must match the current grid size
+# ACCESS_INIT - ksh script to init oasis, cice and mom
+# ACCESS_END - ksh script to postprocess output and handle auto restarts
+#
+# Estimates how much walltime for simulation:
+# walltime=35 mins for 3 months + saving r/sdumps to netcdf
+#
+#PBS -P p66
+#PBS -l mem=288gb
+#PBS -l walltime=02:30:00
+
+###cascade lake
+#PBS -q normal
+#PBS -l ncpus=384
+#PBS -l storage=gdata/p66+gdata/access+gdata/p73+gdata/hh5+gdata/fs38
+
+###Broadwell
+##PBS -q normalbw
+##PBS -l ncpus=308
+
+set -x
+set -e
+
+# path to openmpi 1.6.5 libs
+#export LD_LIBRARY_PATH=/apps/openmpi/1.6.5/lib/Intel:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/apps/openmpi/4.0.2/lib:$LD_LIBRARY_PATH
+
+#export OMPI_MCA_hwloc_base_mem_alloc_policy=local_only
+export SPEED_TEST=false
+
+#for debug run from terminal
+PBS_O_HOST=${PBS_O_HOST:=`hostname`}
+PBS_O_WORKDIR=${PBS_O_WORKDIR:=`pwd`}
+
+echo "Job was submitted from PBS_O_HOST $PBS_O_HOST"
+
+# calculate dir 2 levels up (UM doesn't allow .. in pathnames)
+tmp=`echo $PBS_O_WORKDIR | tr -d /`
+wctmp=`echo $tmp | wc -m`
+wcwrk=`echo $PBS_O_WORKDIR | wc -m`
+(( up2 = $wcwrk - $wctmp - 1 ))
+export SYSTEMDIR=`echo $PBS_O_WORKDIR | cut -d / -f 1-$up2 `
+export SHORTDIR="/scratch/p66/$USER"
+export WORKDIR="$SHORTDIR/work"
+[ ! -d $WORKDIR ] && mkdir -p $WORKDIR
+[ ! -d $DATADIR ] && mkdir -p $DATADIR
+
+export REMOTE_SUBMIT=false
+export REMOTE_PFX=""
+
+export PART=RUN
+export RCF_NEW_EXEC=false
+export STEP=4
+export COMP_LINK_RUN="R"
+export SETOPT="-x"          # Choose shell "set" options for  lower level scripts
+export TYPE=NRUN
+export TARGET_MC=normal
+export SUBMITID=tst
+QUEUE=normal
+# MPP time limits
+export RUN_TIME_LIMIT=
+export NQS_PE_REQ=1
+export QSUB_TIME=""
+export NPROC=1
+
+export NCPUS=UNSET
+export UM_ATM_NPROCX=16
+export UM_ATM_NPROCY=12
+#export UM_ATM_NPROCX=8
+#export UM_ATM_NPROCY=12
+(( UM_NPES = $UM_ATM_NPROCX * $UM_ATM_NPROCY ))
+export UM_NPES
+export UM_OCN_NPROCX=UNSET
+export UM_OCN_NPROCY=UNSET
+export RCF_NPES=1
+export RCF_NPROCY=1
+export RCF_NPROCX=1
+export LABEL=
+set +x
+UM_MAIL_ID=dave.bi@csiro.au
+
+set +x
+echo "*****************************************************************"
+echo "   	UM Version 7.3 template, Non-Operational"
+echo "    	Based on script created by UMUI v6.3"
+echo "     	Modified for use with AusCOM + OASIS3"
+echo "*****************************************************************"
+set -x
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+export UMDIR=/g/data/access/projects/access/umdir
+#??? export UMDIR=${UMDIR:=$SHORTDIR/access/v1/umdir}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+# Model version number
+export VN=7.3
+export ATM_CPL_TYPE=P
+#export ATM_CPL_TYPE=M
+
+# Don't panic if cannot find .umsetvars in UMDIR
+# ... only "source" it, if it is there.
+if test -s $UMDIR/vn$VN/$TARGET_MC/cm1scripts/.umsetvars_$VN ; then
+   echo "Sourcing  $UMDIR/vn$VN/$TARGET_MC/cm1scripts/.umsetvars_$VN"
+   . $UMDIR/vn$VN/$TARGET_MC/cm1scripts/.umsetvars_$VN
+fi
+# this script not only set variables but also creates these directories:
+# MY_UMHOME, TMPDIR, MY_OUTPUT (overrides values set earlier in this script)
+#  . $HOME/.umsetvars_$VN
+#fi
+
+#PATH=$UMDIR/vn$VN/normal/exec:$PATH
+PATH=~access/umdir/vn7.3/normal/exec:$PATH
+
+alias banner='/bin/echo'
+
+if test -s $UMDIR/vn$VN/$TARGET_MC/cm1scripts/umprofile ; then
+   echo "Sourcing $UMDIR/vn$VN/$TARGET_MC/cm1scripts/umprofile"
+   . $UMDIR/vn$VN/$TARGET_MC/cm1scripts/umprofile
+fi
+if test -s $UMDIR/vn$VN/$TARGET_MC/cm1scripts/setglobalvars ; then
+ set UI system variables
+   echo "Sourcing $UMDIR/vn$VN/$TARGET_MC/cm1scripts/setglobalvars"
+   . $UMDIR/vn$VN/$TARGET_MC/cm1scripts/setglobalvars
+fi
+
+##############################################################
+# Set up UM environment variables for export to lower shells #                        #
+##############################################################
+###################################################
+# Run Identifier and Temporary Dir details        #
+###################################################
+
+set -x
+export RUNID=`basename $PBS_O_WORKDIR`
+EXPTALIAS="NONE"
+export ACCESS=true
+# define script to configure AUSCOM and UM-coupled settings before run
+export ACCESS_INIT=$SYSTEMDIR/exp/$RUNID/$RUNID.init
+# define script to archive results, advance date and resubmit next job
+export ACCESS_END=$SYSTEMDIR/exp/$RUNID/$RUNID.fin
+export UM_GRID_PFX=um96
+export JOB_LINE='UM7.3-oasis3mct-auscom'
+
+###################################################
+# OASIS coupling flag                             #
+# set true for AusCOM run
+###################################################
+
+# OASIS is old flag remaining from old UM scripts
+export OASIS=false
+# this is the flag we use to mark coupled runs
+export AUSCOM_CPL=true
+
+# for OASIS run UMScr_TopLevel and friends expect also following vars:
+# OASISRUNDIR   - Working directory of OASIS
+export OASISDIR=$RUNID
+export OASISRUNDIR=$WORKDIR/$OASISDIR
+[ ! -d $OASISRUNDIR ] && mkdir -p $OASISRUNDIR
+[ ! -d ${OASISRUNDIR}/tmp ] && mkdir -p ${OASISRUNDIR}/tmp
+# OMASTER       - Indicator of master script for oasis coupler
+
+export AUTO_RESTART=false
+export UM_SECTOR_SIZE=2048
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### START of Users top script insert
+# it's sourced with . which means it's executed inside the current shell
+
+if test -f $ACCESS_INIT; then
+. $ACCESS_INIT
+else
+  echo "ERROR: User top script insert $ACCESS_INIT not found"
+  exit 1
+fi
+### END of Users top script insert
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+###################################################
+# CORE DUMP SAVING                                #
+###################################################
+
+export SAVECORE=true
+export COREDUMP=$OASISRUNDIR/core.$$
+
+###################################################
+# User defined environment variables              #
+###################################################
+
+export FASTRUN=true
+
+###################################################
+# Standard directories for input files etc        #
+# ILP: table from subindep_FilDir                 #
+###################################################
+
+export UM_SPECTRAL=$UMDIR/vn$VN/ctldata/spectral
+export UM_ANCIL_A=/not-defined #$UMDIR/vn$VN/ancil/atmos/n96
+export UM_BUILD_GL=/not-defined
+export INPUT_DATA=/not-defined
+
+# same but to match the jobs for UM7.3
+export ANCIL_ATMOS=/g/data/access/projects/access/data/ancil/HadGEM3_cal365/
+export ANCIL_LAND=/g/data/access/projects/access/data/ancil/access_v2
+
+###################################################
+# User defined output directories                 #
+###################################################
+
+#UM_DATAW=$DATADIR/$OASISDIR       # User-specific read/write data files
+UM_DATAM=$OASISRUNDIR/ATM_RUN/um_out       # Output Dumps/PP/etc. Generated names
+UM_DATAW=$UM_DATAM                               # User-specific read/write data files
+export DATAW=$UM_DATAW
+export DATAM=$UM_DATAM
+#ACCESS Coupled run
+export UM_TMPDIR=$OASISRUNDIR/ATM_RUN/tmp
+
+# Ensure the following directories exist (o/w run-only jobs will fail)
+for dir in $UM_DATAW $UM_DATAM
+do
+  if test ! -d $dir; then
+   echo "Creating directory $dir"
+   mkdir -p $dir
+  fi
+done
+
+###################################################
+# Directory pointers in environment variables     #
+###################################################
+
+# For files required only during the run
+export TEMP=${UM_TMPDIR}
+export TMPDIR=${TEMP}
+# verify that we get the scripts from the correct location
+echo "PATH used = $PATH"
+whence qsexecute
+
+###################################################
+# Directories on TARGET_MC                        #
+###################################################
+
+PROD_TARGET=$DATADIR
+#DATAW_TARGET=$PROD_TARGET/$RUNID
+DATAW_TARGET=$DATAW
+#DATAM_TARGET=$PROD_TARGET/$RUNID
+DATAM_TARGET=$DATAM
+
+# Set false to always keep output from all PEs
+export UM_NAM_MAX_SECONDS=${UM_NAM_MAX_SECONDS:-300}
+UM_DEL_MPP_OUTPUT=false
+# gol124: append only tail instead of whole output files
+# otherwise for large jobs the output may get so large that
+# the system would terminate the job during the append operation
+export UM_TAIL=true
+
+# Indicates whether operational model
+export OPERATIONAL=false
+# Switch for automatic output processing
+export AUTOMATIC_PP=false
+# Output class for resubmitted jobs
+export OUT_CLASSR=leave
+# Output class for start-run jobs
+export OUT_CLASS=leave
+
+###################################################
+# Variables relating to reconfiguration           #
+###################################################
+
+# Timer for reconfiguration
+export RCF_TIMER=false
+# Delete recon output on success
+RCF_DEL_MPP_OUTPUT=true
+# gol124: save for next run?
+RCF_DEL_MPP_OUTPUT=false
+
+# Level of print output from reconfiguration
+export RCF_PRINTSTATUS=${RCF_PRINTSTATUS:-2}
+
+# Indicates if Atmos reconfiguration step
+# export RCF_ATMOS=true
+# gol124: use file from previous run
+export RCF_ATMOS=false
+# Indicates if Ocean reconfiguration step
+export RCF_OCEAN=false
+# Flag to delete old histfile in NRUN
+export PURGEHIST=true
+# Indicates whether OUTPUT2 is printed
+LONGOUTPUT=false
+# PrStatus_Min, PrStatus_Normal, PrStatus_Oper or PrStatus_Diag
+export PRINT_STATUS=${PRINT_STATUS:-PrStatus_Diag}
+# perftrace options for perfview
+export PERFTRACE=false
+export PERFVIEWOPT="0"
+
+# load module, reconfiguration
+export LOADRECON=$UMDIR/vn$VN/$TARGET_MC/execs/qxreconf
+
+###################################################
+#  Model control files                            #
+###################################################
+
+# Switch for printing files
+export PRINT_INPUT=false
+# Root for system STASHmaster files
+export STASHMSTR=$UMDIR/vn$VN/ctldata/STASHmaster
+# Root for system ANCILmaster files
+export ANCILMSTR=$UMDIR/vn$VN/ctldata/ANCILmaster
+# Destination of standard output files
+export UM_STDOUT_FILE=$DATAW/$RUNID.fort6.pe
+# Destination of recon atmos output files
+export RCF_STDOUT_FILE_A=$DATAW/$RUNID.fort6.rcfa.pe
+# Destination of recon ocean output files
+export RCF_STDOUT_FILE_O=$DATAW/$RUNID.fort6.rcfo.pe
+# Output from pe0 for model
+UM_MPP_OUTPUT="$UM_STDOUT_FILE"0
+# Output from pe0 for recon (atm)
+RCF_MPP_OUTPUT_A="$RCF_STDOUT_FILE_A"0
+# Output from pe0 for recon (ocn)
+RCF_MPP_OUTPUT_O="$RCF_STDOUT_FILE_O"0
+# Output file for the job step
+PREFIXT=""
+export OUTPUT=$DATAW/$PREFIXT$RUNID.out
+# Running submodels
+export UM_ATMOS=true
+export UM_OCEAN=false
+export UM_SLAB=false
+export UM_WAVE=false
+
+# Indicates automatic postprocessing
+export UM_AUTOPP=$AUTOMATIC_PP
+# Indicates whether MPP run
+UM_PROCT=true
+# Indicates a suite run
+UM_SUITE=false
+UM_START_MAIL=false
+UM_END_MAIL=false
+UM_LOUTPUT=200000
+
+# Check current dir
+echo "PWD: $PWD"
+
+####################################################
+# Finally call the revised top level script for UM #
+####################################################
+set +x
+echo '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+echo '@@@ starting UMScr_TopLevel:' `whence UMScr_TopLevel`
+echo '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+set -x
+which UMScr_TopLevel
+. UMScr_TopLevel
+export RC=$?
+
+###################################################
+# USERS bottom script insert       start          #
+###################################################
+if test -f $ACCESS_END; then
+. $ACCESS_END
+else
+  echo "ERROR: User bottom script insert $ACCESS_END not found"
+  exit 1
+fi
+###################################################
+# USERS bottom script insert       end            #
+###################################################
+
+exit $RC

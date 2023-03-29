@@ -234,10 +234,10 @@ co2_interactive=1       # 1/0, interacitve co2 on(1)/off(0)
 co2_emits=1             # 1/0, surface emissions on(1)/off(0)
 ndep_flag=1             # 0 fixed Ndep from restart file, 1 monthly from ancillary
 #----------------- condition for warm start --------------------------------
-expname=AERA-ABS1p5-03
-ic_year=2026       #change warm start year here
+expname=HI-EDC-04
+ic_year=2015      #change warm start year here
 #---------------------------------------------------------------------------
-ic_archivedir=/scratch/p66/mrd599/archive/${expname}/restart
+ic_archivedir=/g/data/p73/archive/CMIP6/ACCESS-ESM1-5/${expname}/restart
 (( ic_year_e= $ic_year-1 ));
 ic_edate=$ic_year_e'1231';      typeset -Z8 ic_edate
 ic_sdate=$ic_year'0101';      typeset -Z8 ic_sdate
@@ -251,7 +251,7 @@ if [ $CMIP5RUN == "historical" ]; then
 elif [ $CMIP5RUN == "ssp1" ] || [ $CMIP5RUN == "ssp2" ] || [ $CMIP5RUN == "ssp3" ] || [ $CMIP5RUN == "ssp5" ]; then
   finish_year=2200
   cold_start=0 #historial run is warm start, and condition must be set up
-  realstartyear=2026 #for AERA2 starting from AERA
+  realstartyear=2015 #for AERA2 starting from HI-EDC
 else
   realstartyear=101  #$ic_year   #$ic_year #it must be greater than 2 to work. #for picontrol warm start
 fi
