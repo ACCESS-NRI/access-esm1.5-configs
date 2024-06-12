@@ -10,14 +10,14 @@ submodels:
     - name: atmosphere
       model: um
       ncpus: 192
-      exe: /g/data/tm70/pcl851/src/penguian/access-esm-build-gadi/bin/um_hg3.exe-20240307
+      exe: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64/intel-19.0.5.281/um7-git.2024.05.21_7.3-zh77vblf4kbj6g6f56nllygk7nk65l5n/bin/um_hg3.exe
       input:
         - /g/data/access/payu/access-esm/input/pre-industrial/atmosphere
 
     - name: ocean
       model: mom
       ncpus: 180
-      exe: /g/data/tm70/pcl851/src/penguian/access-esm-build-gadi/bin/mom5xx
+      exe: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64/intel-19.0.5.281/mom5-git.access-esm1.5_2024.05.24_access-esm1.5-2bfrfafe46wrb6iuhksa6jjcevhnjn3z/bin/fms_ACCESS-CM.x
       input:
         - /g/data/access/payu/access-esm/input/pre-industrial/ocean/common
         - /g/data/access/payu/access-esm/input/pre-industrial/ocean/pre-industrial
@@ -25,7 +25,7 @@ submodels:
     - name: ice
       model: cice
       ncpus: 12
-      exe: /g/data/tm70/pcl851/src/penguian/access-esm-build-gadi/bin/cice4.1_access-mct-12p-20240307
+      exe: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64/intel-19.0.5.281/cice4-git.2024.05.21_access-esm1.5-bp4fqohyjqde7jb2l663sargto3smceu/bin/cice_access_360x300_12x1_12p.exe
       input:
         - /g/data/access/payu/access-esm/input/pre-industrial/ice
 
@@ -36,7 +36,7 @@ submodels:
         - /g/data/access/payu/access-esm/input/pre-industrial/coupler
 
 collate:
-   exe: /g/data/access/payu/access-esm/bin/mppnccombine
+   exe: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64/intel-19.0.5.281/mom5-git.access-esm1.5_2024.05.24_access-esm1.5-2bfrfafe46wrb6iuhksa6jjcevhnjn3z/bin/mppnccombine.spack
    restart: true
    mem: 4GB
 
