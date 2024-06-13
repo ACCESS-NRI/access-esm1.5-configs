@@ -36,7 +36,7 @@ submodels:
         - /g/data/access/payu/access-esm/input/pre-industrial/coupler
 
 collate:
-   exe: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64/intel-19.0.5.281/mom5-git.access-esm1.5_2024.05.24_access-esm1.5-2bfrfafe46wrb6iuhksa6jjcevhnjn3z/bin/mppnccombine.spack
+   exe: /g/data/access/payu/access-esm/bin/mppnccombine
    restart: true
    mem: 4GB
 
