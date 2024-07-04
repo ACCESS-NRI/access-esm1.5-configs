@@ -1,18 +1,18 @@
 format: yamanifest
 version: 1.0
 ---
-work/atmosphere/um_hg3.exe-20240307:
-  fullpath: /g/data/tm70/pcl851/src/penguian/access-esm-build-gadi/bin/um_hg3.exe-20240307
+work/atmosphere/um_hg3.exe:
+  fullpath: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/um7-git.2024.07.03_access-esm1.5-sgtnpkn2y4sa7rpwkcoj2vwaqg63wb46/bin/um_hg3.exe
   hashes:
-    binhash: 1b9fd068aba4a75e2eb834c38fd22788
-    md5: a9058e2abd586e8d1c17ec63a42b6136
-work/ice/cice4.1_access-mct-12p-20240307:
-  fullpath: /g/data/tm70/pcl851/src/penguian/access-esm-build-gadi/bin/cice4.1_access-mct-12p-20240307
+    binhash: b577004c8c3fecdb96a5cfac43270d6f
+    md5: d6b46a1c8cd550b72de90f3b1e878c03
+work/ice/cice_access_360x300_12x1_12p.exe:
+  fullpath: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/cice4-git.2024.05.21_access-esm1.5-hl7736a47pat6l33vsku3yadrudoqe3q/bin/cice_access_360x300_12x1_12p.exe
   hashes:
-    binhash: 304441ddc6e49d7c60eefb9b93c68f3c
-    md5: 3436f0b59e13cc280783ee00dd1d3bc7
-work/ocean/mom5xx:
-  fullpath: /g/data/tm70/pcl851/src/penguian/access-esm-build-gadi/bin/mom5xx
+    binhash: a830239468e63f62592640a3d2ac77a2
+    md5: abf06f178ebca026ccf6ccef65b927d1
+work/ocean/fms_ACCESS-CM.x:
+  fullpath: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/mom5-git.access-esm1.5_2024.06.20_access-esm1.5-6dlcxvntncmxxwsboq2xtao3dfzrvsl2/bin/fms_ACCESS-CM.x
   hashes:
-    binhash: 649b9210bb53a899ccaaa38f04b3f0d8
-    md5: 32007df52d8be049857e2a1335289116
+    binhash: 6232f5dfee4ca50725fecd4d90505c91
+    md5: 4534874bfcac23502c314ddede65d668

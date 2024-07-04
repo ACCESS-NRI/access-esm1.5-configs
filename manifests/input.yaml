@@ -29,8 +29,8 @@ work/atmosphere/INPUT/CABLE-AUX-1.4/core/biogeochem/pftlookup_csiro_v16_17tiles_
 work/atmosphere/INPUT/CABLE-AUX-1.4/core/biogeochem/pftlookup_csiro_v16_17tiles_wtlnds.csv:
   fullpath: /g/data/access/payu/access-esm/input/pre-industrial/atmosphere/CABLE-AUX-1.4/core/biogeochem/pftlookup_csiro_v16_17tiles_wtlnds.csv
   hashes:
-    binhash: 89260b97f347f244e3afa35df0cbcb51
-    md5: 109d0702afd2cb0a66bf141faccaee30
+    binhash: e7e2567e4109446b57a49e6ef15e683b
+    md5: a526e6d3a2ad2e24d069a3b9a572def7
 work/atmosphere/INPUT/CABLE-AUX-1.4/core/biogeochem/poolcnpInTumbarumba.csv:
   fullpath: /g/data/access/payu/access-esm/input/pre-industrial/atmosphere/CABLE-AUX-1.4/core/biogeochem/poolcnpInTumbarumba.csv
   hashes:
