@@ -42,6 +42,9 @@ collate:
 
 restart: /g/data/vk83/experiments/inputs/access-esm1p5/pre-industrial/restart/
 
+userscripts:
+   archive: ./scripts/NetCDF-conversion/submit_conversion_job.sh 
+
 calendar:
     start:
         year: 101
