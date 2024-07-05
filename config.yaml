@@ -15,29 +15,85 @@ submodels:
       ncpus: 192
       exe: /g/data/access/payu/access-esm/bin/coe/um7.3x
       input:
-        - /g/data/vk83/experiments/inputs/access-esm1p5/historical/atmosphere
-        - /g/data/access/payu/access-esm/input/pre-industrial/atmosphere
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/OCFF_1849_2015_ESM1.anc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/BC_hi_1849_2015_ESM1.anc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/scycl_1849_2015_ESM1_v4.anc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/Bio_1849_2015_ESM1.anc
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/atmosphere/forcing/global.N96/2021.06.22/ozone_1849_2015_ESM1.anc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/atmosphere/forcing/resolution_independent/2021.06.22/volcts_cmip6.dat
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/atmosphere/land/biogeochemistry/global.N96/2021.06.22/Ndep_1849_2015.anc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/atmosphere/land/vegetation/global.N96/2024.07.04/cableCMIP6_LC_1850-2015.nc
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/atmosphere/solar/resolution_independent/2021.06.22/TSI_CMIP6_ESM_v2
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/land/biogeochemistry/resolution_independent/2020.05.19/modis_phenology_csiro.txt
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/land/biogeochemistry/resolution_independent/2020.05.19/pftlookup_csiro_v16_17tiles_wtlnds.csv
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/land/biogeophysics/resolution_independent/2020.05.19/def_soil_params.txt
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/land/biogeophysics/resolution_independent/2020.05.19/def_veg_params.txt
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/land/soiltype/global.N96/2020.05.19/qrparm.soil_igbp_vg
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/land/vegetation/global.N96/2020.05.19/cable_vegfunc_N96.anc
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/spectral/resolution_independent/2020.05.19/spec3a_sw_hadgem1_6on
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/spectral/resolution_independent/2020.05.19/spec3a_lw_hadgem1_6on
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/grids/global.N96/2020.05.19/qrparm.mask
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/grids/resolution_independent/2020.05.19/vertlevs_G3
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/aerosol/global.N96/2020.05.19/biogenic_351sm.N96L38
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/aerosol/global.N96/2020.05.19/sulpc_oxidants_N96_L38
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/aerosol/global.N96/2020.05.19/DMS_conc.N96
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/atmosphere/stash/2020.05.19/
+
 
     - name: ocean
       model: mom
       ncpus: 180
       exe: /g/data/access/payu/access-esm/bin/coe/mom5xx
       input:
-        - /g/data/access/payu/access-esm/input/pre-industrial/ocean/common
-        - /g/data/access/payu/access-esm/input/pre-industrial/ocean/pre-industrial
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ocean/biogeochemistry/global.1deg/2020.05.19/dust.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ocean/biogeochemistry/global.1deg/2020.05.19/ocmip2_press_monthly_om1p5_bc.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ocean/biogeochemistry/global.1deg/2020.05.19/bgc_param.nc
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ocean/tides/global.1deg/2020.05.19/roughness_amp.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ocean/tides/global.1deg/2020.05.19/tideamp.nc
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ocean/grids/mosaic/global.1deg/2020.05.19/grid_spec.nc
+        
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ocean/shortwave_penetration/global.1deg/2020.05.19/ssw_atten_depth.nc
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/unused/ocean/biogeochemistry/global.1deg/2020.05.19/ocmip2_fice_monthly_om1p5_bc.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/unused/ocean/biogeochemistry/global.1deg/2020.05.19/ocmip2_xkw_monthly_om1p5_bc.nc
+
 
     - name: ice
       model: cice
       ncpus: 12
       exe: /g/data/access/payu/access-esm/bin/coe/cicexx
       input:
-        - /g/data/access/payu/access-esm/input/pre-industrial/ice
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ice/grids/global.1deg/2020.05.19/kmt.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ice/grids/global.1deg/2020.05.19/grid.nc
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/ice/climatology/global.1deg/2020.05.19/monthly_sstsss.nc
+
 
     - name: coupler
       model: oasis
       ncpus: 0
       input:
-        - /g/data/access/payu/access-esm/input/pre-industrial/coupler
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/grids/global.oi_1deg.a_N96/2020.05.19/grids.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/grids/global.oi_1deg.a_N96/2020.05.19/areas.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/grids/global.oi_1deg.a_N96/2020.05.19/masks.nc
+
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/remapping_weights/global.oi_1deg.a_N96/2020.05.19/rmp_cice_to_um1t_CONSERV_FRACNNEI.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/remapping_weights/global.oi_1deg.a_N96/2020.05.19/rmp_um1u_to_cice_CONSERV_FRACNNEI.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/remapping_weights/global.oi_1deg.a_N96/2020.05.19/rmp_um1t_to_cice_CONSERV_DESTAREA.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/remapping_weights/global.oi_1deg.a_N96/2020.05.19/rmp_cice_to_um1u_CONSERV_FRACNNEI.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/remapping_weights/global.oi_1deg.a_N96/2020.05.19/rmp_um1v_to_cice_CONSERV_FRACNNEI.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/remapping_weights/global.oi_1deg.a_N96/2020.05.19/rmp_um1t_to_cice_CONSERV_FRACNNEI.nc
+        - /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/shared-modern/coupler/remapping_weights/global.oi_1deg.a_N96/2020.05.19/rmp_cice_to_um1v_CONSERV_FRACNNEI.nc
 
 collate:
    exe: /g/data/access/payu/access-esm/bin/mppnccombine
