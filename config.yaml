@@ -100,7 +100,7 @@ collate:
    restart: true
    mem: 4GB
 
-restart: /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/restar
+restart: /g/data/tm70/sw6175/esm1p5-input-restructure/restructured-inputs/modern/historical/restart
 
 calendar:
     start:
