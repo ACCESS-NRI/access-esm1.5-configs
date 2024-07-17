@@ -1,7 +1,0 @@
-experiment_uuid: fb187ac5-df50-4f6b-9ab7-08858065d731
-created: '2024-07-17'
-name: 
-  access-esm1.5-configs-16-pre-industrial-use-released-access-esm1p5-module-fb187ac5
-model: ACCESS
-url: git@github.com:ACCESS-NRI/access-esm1.5-configs.git
-email: paul.leopardi@anu.edu.au
