@@ -1,6 +1,12 @@
 jobname: pre-industrial
 queue: normal
-walltime: 2:00:00
+walltime: 0:10:00
+
+modules:
+  use:
+      - /g/data/vk83/apps/spack/0.22/release/modules/linux-rocky8-x86_64_v4
+  load:
+      - access-esm1p5/2024.05.0
 
 # note: if laboratory is relative path, it is relative to /scratch/$PROJECT/$USER
 laboratory: access-esm
@@ -10,14 +16,14 @@ submodels:
     - name: atmosphere
       model: um
       ncpus: 192
-      exe: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/um7-git.2024.07.03_access-esm1.5-sgtnpkn2y4sa7rpwkcoj2vwaqg63wb46/bin/um_hg3.exe
+      exe: um_hg3.exe
       input:
         - /g/data/access/payu/access-esm/input/pre-industrial/atmosphere
 
     - name: ocean
       model: mom
       ncpus: 180
-      exe: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/mom5-git.access-esm1.5_2024.06.20_access-esm1.5-6dlcxvntncmxxwsboq2xtao3dfzrvsl2/bin/fms_ACCESS-CM.x
+      exe: fms_ACCESS-CM.x
       input:
         - /g/data/access/payu/access-esm/input/pre-industrial/ocean/common
         - /g/data/access/payu/access-esm/input/pre-industrial/ocean/pre-industrial
@@ -25,7 +31,7 @@ submodels:
     - name: ice
       model: cice
       ncpus: 12
-      exe: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/cice4-git.2024.05.21_access-esm1.5-hl7736a47pat6l33vsku3yadrudoqe3q/bin/cice_access_360x300_12x1_12p.exe
+      exe: cice_access_360x300_12x1_12p.exe
       input:
         - /g/data/access/payu/access-esm/input/pre-industrial/ice
 
@@ -36,9 +42,10 @@ submodels:
         - /g/data/access/payu/access-esm/input/pre-industrial/coupler
 
 collate:
-   exe: /g/data/vk83/prerelease/apps/spack/0.21/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/mom5-git.access-esm1.5_2024.06.20_access-esm1.5-6dlcxvntncmxxwsboq2xtao3dfzrvsl2/bin/mppnccombine.spack
-   restart: true
-   mem: 4GB
+    exe: mppnccombine.spack
+    restart: true
+    mem: 4GB
+    walltime: 0:05:00
 
 restart: /g/data/vk83/experiments/inputs/access-esm1p5/pre-industrial/restart/
 
@@ -49,8 +56,8 @@ calendar:
         days: 1
 
     runtime:
-        years: 1
-        months: 0
+        years: 0
+        months: 1
         days: 0
 
 runspersub: 1
