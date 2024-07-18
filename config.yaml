@@ -1,6 +1,6 @@
 jobname: pre-industrial
 queue: normal
-walltime: 0:10:00
+walltime: 2:00:00
 
 modules:
   use:
@@ -45,7 +45,7 @@ collate:
     exe: mppnccombine.spack
     restart: true
     mem: 4GB
-    walltime: 0:05:00
+    walltime: 1:00:00
 
 restart: /g/data/vk83/experiments/inputs/access-esm1p5/pre-industrial/restart/
 
@@ -56,8 +56,8 @@ calendar:
         days: 1
 
     runtime:
-        years: 0
-        months: 1
+        years: 1
+        months: 0
         days: 0
 
 runspersub: 1
