@@ -117,6 +117,11 @@
   , restore_ice     = .false.
 /
 
+! Please note, the following diagnostics are currently affected by a
+! coupling bug and have been disabled from the output:
+! fsalt_ai, daidtd, daidtt, dvidtd, congel, frazil, meltl, meltb,
+! meltt, snoice, dvidtt, fswthru_ai, Tsfc, snoice.
+
 &icefields_nml
     f_tmask        = .true.
   , f_tarea        = .true.
@@ -135,7 +140,7 @@
   , f_bounds       = .false.
   , f_hi           = 'm'
   , f_hs           = 'm' 
-  , f_Tsfc         = 'm' 
+  , f_Tsfc         = 'x'
   , f_aice         = 'm' 
   , f_uvel         = 'm' 
   , f_vvel         = 'm' 
@@ -171,20 +176,20 @@
   , f_Tair         = 'x' 
   , f_Tref         = 'x' 
   , f_Qref         = 'x'
-  , f_congel       = 'm' 
-  , f_frazil       = 'm' 
-  , f_snoice       = 'm' 
-  , f_meltt        = 'm'
-  , f_meltb        = 'm'
-  , f_meltl        = 'm'
+  , f_congel       = 'x'
+  , f_frazil       = 'x'
+  , f_snoice       = 'x'
+  , f_meltt        = 'x'
+  , f_meltb        = 'x'
+  , f_meltl        = 'x'
   , f_fresh        = 'x'
   , f_fresh_ai     = 'm'
   , f_fsalt        = 'x'
-  , f_fsalt_ai     = 'm'
+  , f_fsalt_ai     = 'x'
   , f_fhocn        = 'x' 
   , f_fhocn_ai     = 'm' 
   , f_fswthru      = 'x' 
-  , f_fswthru_ai   = 'm' 
+  , f_fswthru_ai   = 'x'
   , f_fsurf_ai     = 'm'
   , f_fcondtop_ai  = 'm'
   , f_fmeltt_ai    = 'm' 
@@ -203,10 +208,10 @@
   , f_shear        = 'm'
   , f_sig1         = 'x' 
   , f_sig2         = 'x' 
-  , f_dvidtt       = 'm' 
-  , f_dvidtd       = 'm' 
-  , f_daidtt       = 'm'
-  , f_daidtd       = 'm' 
+  , f_dvidtt       = 'x'
+  , f_dvidtd       = 'x'
+  , f_daidtt       = 'x'
+  , f_daidtd       = 'x'
   , f_mlt_onset    = 'm'
   , f_frz_onset    = 'm'
   , f_dardg1dt     = 'x'
