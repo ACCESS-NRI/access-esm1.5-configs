@@ -120,7 +120,7 @@
 ! Please note, the following diagnostics are currently affected by a
 ! coupling bug and have been disabled from the output:
 ! fsalt_ai, daidtd, daidtt, dvidtd, congel, frazil, meltl, meltb,
-! meltt, snoice, dvidtt, fswthru_ai, Tsfc, snoice.
+! meltt, snoice, dvidtt, fswthru_ai, Tsfc.
 
 &icefields_nml
     f_tmask        = .true.
