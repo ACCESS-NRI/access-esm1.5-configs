@@ -1,0 +1,86 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: 'The Australian Earth System Model: ACCESS-ESM1.5'
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Tilo
+    family-names: Ziehn
+    email: tilo.ziehn@csiro.au
+    affiliation: >-
+      CSIRO Oceans and Atmosphere, Aspendale, Vic.
+      Australia.
+    orcid: 'https://orcid.org/0000-0001-9873-9775'
+  - given-names: Matthew A.
+    family-names: Chamberlain
+    affiliation: 'CSIRO Oceans and Atmosphere, Hobart, Tas. Australia.'
+    orcid: 'https://orcid.org/0000-0002-3287-3282'
+  - given-names: Rachel M.
+    family-names: Law
+    affiliation: >-
+      CSIRO Oceans and Atmosphere, Aspendale, Vic.
+      Australia.
+    orcid: 'https://orcid.org/0000-0002-7346-0927'
+  - given-names: Lenton
+    family-names: Andrew
+    orcid: 'https://orcid.org/0000-0001-9437-8896'
+    affiliation: 'CSIRO Oceans and Atmosphere, Hobart, Tas. Australia.'
+  - given-names: Roger W.
+    family-names: Bodman
+    affiliation: >-
+      CSIRO Oceans and Atmosphere, Aspendale, Vic.
+      Australia. School of Earth Sciences, The University of
+      Melbourne, Parkville, Vic. Australia.
+    orcid: 'https://orcid.org/0000-0002-8349-3001'
+  - given-names: Martin
+    family-names: Dix
+    affiliation: >-
+      CSIRO Oceans and Atmosphere, Aspendale, Vic.
+      Australia.
+    orcid: 'https://orcid.org/0000-0002-7534-0654'
+  - given-names: Lauren
+    family-names: Stevens
+    affiliation: >-
+      CSIRO Oceans and Atmosphere, Aspendale, Vic.
+      Australia.
+    orcid: 'https://orcid.org/0000-0002-1884-328X'
+  - given-names: Ying-ping
+    family-names: Wang
+    orcid: 'https://orcid.org/0000-0002-4614-6203'
+    affiliation: >-
+      CSIRO Oceans and Atmosphere, Aspendale, Vic.
+      Australia.
+  - given-names: Jhan
+    family-names: Srbinovsky
+    affiliation: >-
+      CSIRO Oceans and Atmosphere, Aspendale, Vic.
+      Australia.
+identifiers:
+  - type: doi
+    value: 10.1071/ES19035
+    description: Link to published journal paper
+repository-code: 'https://github.com/acCESS-NRI/access-esm1.5'
+url: >-
+  https://www.access-nri.org.au/models/earth-system-models/earth-system-model-esm/
+repository: 'https://github.com/ACCESS-NRI/access-esm1.5-configs'
+abstract: >-
+  The Australian Community Climate and Earth System
+  Simulator (ACCESS) has been extended to include land and
+  ocean carbon cycle components to form an Earth System
+  Model (ESM). The current version, ACCESS-ESM1.5, has been
+  mainly developed to enable Australia to participate in the
+  Coupled Model Intercomparison Project Phase 6 (CMIP6) with
+  an ESM version.
+keywords:
+  - ACCESS
+  - biogeochemistry
+  - CABLE
+  - carbon cycle
+  - climate modelling
+  - CMIP6
+  - earth system modelling
+license: CC-BY-NC-4.0
