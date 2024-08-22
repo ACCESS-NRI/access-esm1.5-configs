@@ -5,7 +5,7 @@ set -eu
 # This file will have a name of form aiihca.da??110
 year_end_restart=work/atmosphere/aiihca.da??110
 
-if [ -f $end_year_file ]; then
+if [ -f $year_end_restart ]; then
     ./scripts/update_landuse.py work/atmosphere/INPUT/cableCMIP6_LC_1850-2015.nc $year_end_restart
 else
     echo "Warning: No atmosphere end of year restart file found. update_landuse.py will not be run." >&2 
