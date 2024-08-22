@@ -3,11 +3,11 @@
   , year_init      = 0001
   , istep0         = 0
   , dt             = 3600
-  , npt            = 24
+  , npt            = 8760
   , ndyn_dt        = 1
-  , runtype        = 'initial'
+  , runtype        = 'continue'
   , ice_ic         = 'default'
-  , restart        = .false.
+  , restart        = .true.
   , restart_dir    = './RESTART/'
   , restart_file   = 'iced'
   , pointer_file   = './RESTART/ice.restart_file'
