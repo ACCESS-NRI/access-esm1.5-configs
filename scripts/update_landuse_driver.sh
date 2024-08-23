@@ -1,9 +1,6 @@
 #!/bin/bash
 set -eu
 
-module use /g/data/vk83/modules
-module load payu
-
 # Update land use fields in the end of year restart
 # This file will have a name of form aiihca.da??110
 year_end_restart=work/atmosphere/aiihca.da??110
