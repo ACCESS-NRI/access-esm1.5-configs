@@ -1,4 +1,4 @@
-#!/g/data/hh5/public/apps/nci_scripts/python-analysis3
+#!/usr/bin/env python3
 # Copyright 2020 Scott Wales
 # author: Scott Wales <scott.wales@unimelb.edu.au>
 #

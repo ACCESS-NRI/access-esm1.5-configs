@@ -19,9 +19,6 @@ laboratory: access-esm
 jobname: historical
 queue: normal
 walltime: 2:30:00
-storage:
-  gdata:
-    - hh5
 
 # Modules for loading model executables
 modules:
