@@ -27,6 +27,9 @@
       max_output_fields = 400,
       max_input_fields = 350,
       issue_oor_warnings=.FALSE.
+      max_num_axis_sets = 400 
+      max_axes = 700 
+      max_files = 400 
 /
 
  &ocean_barotropic_nml
