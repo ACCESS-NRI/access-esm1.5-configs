@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 set -eu
 
 module use /g/data/vk83/modules
