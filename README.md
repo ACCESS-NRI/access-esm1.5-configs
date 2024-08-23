@@ -3,7 +3,7 @@ Standard configuration for a coupled CO~2~ concentration driven [ACCESS-ESM1.5](
 
 For usage instructions, see the [ACCESS-Hive docs](https://access-hive.org.au/models/run-a-model/run-access-esm/)
 
-This configution is based on and and maintains reproducibility with the CMIP6 configuration developed at [CSIRO](https://www.csiro.au/en/research/environmental-impacts/climate-change/climate-science-centre).
+This configution is based on and maintains reproducibility with the CMIP6 configuration developed at [CSIRO](https://www.csiro.au/en/research/environmental-impacts/climate-change/climate-science-centre).
 
 ## Conditions of use
 
