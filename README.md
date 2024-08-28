@@ -1,5 +1,5 @@
 # historical+concentrations
-Standard configuration for a coupled CO~2~ concentration driven [ACCESS-ESM1.5](https://github.com/ACCESS-NRI/ACCESS-ESM1.5) under historical forcings between 1850-2014. For details on the forcings, see https://doi.org/10.1071/ES19035.
+Standard configuration for a coupled CO<sub>2</sub> concentration driven [ACCESS-ESM1.5](https://github.com/ACCESS-NRI/ACCESS-ESM1.5) under historical forcings between 1850-2014.
 
 For usage instructions, see the [ACCESS-Hive docs](https://access-hive.org.au/models/run-a-model/run-access-esm/)
 
