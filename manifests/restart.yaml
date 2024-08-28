@@ -76,6 +76,12 @@ work/ice/RESTART/mice.nc:
   hashes:
     binhash: 24ce8602876ab14e9607f4d4ed192f44
     md5: 0085475b82f3e0876b7be9203538c97a
+work/ice/RESTART/restart_date.nml:
+  copy: true
+  fullpath: /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/restart/ice/restart_date.nml
+  hashes:
+    binhash: 97299fc009fe4b103eb21d4bca4fb413
+    md5: 9f914094ec1a3c39ad6384553f120f64
 work/ocean/INPUT/README:
   fullpath: /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/restart/ocean/README
   hashes:
