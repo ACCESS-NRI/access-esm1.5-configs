@@ -1,18 +1,8 @@
 format: yamanifest
 version: 1.0
 ---
-work/atmosphere/um_hg3.exe:
-  fullpath: /g/data/vk83/apps/spack/0.22/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/um7-git.2024.07.03_access-esm1.5-kgxooyp2s476dd4zc5mgtwhxfknkhnoe/bin/um_hg3.exe
+work/um7.3x:
+  fullpath: /g/data/access/payu/access-esm/bin/coe/amip/um7.3x
   hashes:
-    binhash: 3180dda616c7dfe63d8134e00bff2641
-    md5: 1b7874ffb5e34ec50b6a68abbb7769a6
-work/ice/cice_access_360x300_12x1_12p.exe:
-  fullpath: /g/data/vk83/apps/spack/0.22/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/cice4-git.2024.05.21_access-esm1.5-hhtnigwxdyz7ta4dv3gvhwulze6hxqra/bin/cice_access_360x300_12x1_12p.exe
-  hashes:
-    binhash: 818f213e53d30fc307b565c35939382c
-    md5: 04fd88249ebc16e3f560fc265838e9d1
-work/ocean/fms_ACCESS-CM.x:
-  fullpath: /g/data/vk83/apps/spack/0.22/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/mom5-git.access-esm1.5_2024.08.23_access-esm1.5-ougudnkjcdkuuu6wuxne3uy7tr4y6oes/bin/fms_ACCESS-CM.x
-  hashes:
-    binhash: 711dd9e382eee06aba1f38ce83f7e7d5
-    md5: 96863931103def85ed76b152ba01b5c1
+    binhash: 97d3dc01c1ca6754a5b298ec46cb8d71
+    md5: b940be586b14738d766a345fda25cc4c
