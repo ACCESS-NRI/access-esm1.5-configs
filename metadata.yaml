@@ -1,6 +1,6 @@
-contact: Add your name here
-email: Add your email address here
-created: Add the date you started the experiment here (YYYY-MM-DD)
+contact: Spencer Wong
+email: spencer.wong@anu.edu.au
+created: '2024-11-15'
 description: |-
   ACCESS-ESM1.5 global coupled model configuration running in co2 concentration driven mode under time varying historical (1850-2014) forcings, as described in Ziehn et al. (2020), https://doi.org/10.1071/ES19035.
   Historical forcing data including atmospheric co2 concentrations are primarily sourced from UKMO versions of CMIP6 inputs, with land use change data adapted from the Land-Use Harmonisation 2 (LUH2) dataset developed for CMIP6 (Hurtt et al. 2017), https://doi.org/10.22033/ESGF/input4MIPs.1127.
@@ -12,17 +12,25 @@ notes: |-
    ACCESS-NRI requests users follow the guidelines for acknowledging ACCESS-NRI and include a statement such as:
    "This research used the ACCESS-ESM1.5 model infrastructure provided by ACCESS-NRI, which is enabled by the Australian Government's National Collaborative Research Infrastructure Strategy (NCRIS)."
 keywords:
-  - global
-  - access-esm1.5
+- global
+- access-esm1.5
 realm:
-  - atmos
-  - land
-  - ocean
-  - ocnBgchem
-  - seaIce
+- atmos
+- land
+- ocean
+- ocnBgchem
+- seaIce
 nominal_resolution: 100 km
 reference: https://doi.org/10.1071/ES19035
 license: CC-BY-4.0
-model: ACCESS-ESM1.5
+model: ACCESS
 version: '1.1'
-url: https://github.com/ACCESS-NRI/access-esm1.5-configs.git
+url: https://github.com/ACCESS-NRI/access-esm1.5-configs
+experiment_uuid: 93226a55-fd48-4da1-ac6f-6ab5b0bec621
+name: hist-to-amip-release-historical+concentrations-93226a55
+schema_version:  # The version of the schema (string)
+long_description: # Long description of the experiment (string)
+frequency: # The frequency(/ies) included in the experiment (string)
+variable: # The variable(s) included in the experiment (string)
+parent_experiment: # experiment_uuid for parent experiment if appropriate (string)
+related_experiments: # experiment_uuids for any related experiment(s) (string)
