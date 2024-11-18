@@ -81,6 +81,8 @@ submodels:
         - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/ocean/shortwave_penetration/global.1deg/2020.05.19/ssw_atten_depth.nc
         # Grids
         - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/ocean/grids/mosaic/global.1deg/2020.05.19/grid_spec.nc
+        # Basin mask
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/ocean/basins/global.1deg/2020.05.19/basin_mask.nc
 
     - name: ice
       model: cice
