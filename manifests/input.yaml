@@ -296,6 +296,11 @@ work/ice/INPUT/monthly_sstsss.nc:
   hashes:
     binhash: 49aab10f25c58a9a0ffa5617847050ff
     md5: 323d4c605f83f4d7d3126da70153c2ed
+work/ocean/INPUT/basin_mask.nc:
+  fullpath: /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/ocean/basins/global.1deg/2020.05.19/basin_mask.nc
+  hashes:
+    binhash: 98462c5ebc1edda0f42ca61be74801e6
+    md5: 20fd8740f24ca95c7c086343077e9c0d
 work/ocean/INPUT/bgc_param.nc:
   fullpath: /g/data/vk83/configurations/inputs/access-esm1p5/share/ocean/biogeochemistry/global.1deg/2024.07.12/bgc_param.nc
   hashes:
