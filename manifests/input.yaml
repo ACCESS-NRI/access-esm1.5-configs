@@ -56,11 +56,6 @@ work/atmosphere/INPUT/STASHmaster/STASHsections_A:
   hashes:
     binhash: 9401083e4199439b77254fc490b6597d
     md5: 8525fd107dbea6184db74089f1d55fd9
-work/atmosphere/INPUT/STASHmaster/manifest.yaml:
-  fullpath: /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/stash/2020.05.19/STASHmaster/manifest.yaml
-  hashes:
-    binhash: 0c5b7b98f44c8244eb5e3546ddd14ffc
-    md5: a0ed46f7a89e54ec91453533d4b3552e
 work/atmosphere/INPUT/biogenic_351sm.N96L38:
   fullpath: /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/aerosol/global.N96/2020.05.19/biogenic_351sm.N96L38
   hashes:
@@ -221,11 +216,6 @@ work/atmosphere/INPUT/stasets/X01010206:
   hashes:
     binhash: a7c6cf46b049f520547eab48654687ad
     md5: 7d5e82e70a2f3936743eb957462d41aa
-work/atmosphere/INPUT/stasets/manifest.yaml:
-  fullpath: /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/stash/2020.05.19/stasets/manifest.yaml
-  hashes:
-    binhash: cf50bcba87ce5beea01a939180dc71f2
-    md5: e179226d2f2de9a224051d04ffa5ed84
 work/atmosphere/INPUT/sulpc_oxidants_N96_L38:
   fullpath: /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/aerosol/global.N96/2020.05.19/sulpc_oxidants_N96_L38
   hashes:
