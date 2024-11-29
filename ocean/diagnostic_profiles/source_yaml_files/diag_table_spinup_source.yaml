@@ -163,7 +163,6 @@ diag_table:
             tx_trans_submeso:
             ty_trans_submeso:
             neutral_rho:
-
             age_global:
             rho:
             ty_trans:
@@ -194,7 +193,6 @@ diag_table:
             adic:
             fe:
             pprod_gross:
-
 
     'yearly 2d ocean fields':
         defaults:  # these can be overridden for individual fields below
@@ -228,7 +226,6 @@ diag_table:
             vrhod:
             ubott:
             vbott:
-
             temp_yflux_adv_int_z:
             temp_xflux_adv_int_z:
             salt_yflux_adv_int_z:
@@ -282,7 +279,6 @@ diag_table:
             tau_y:
             usurf:
             vsurf:
-
 
     'monthly 1d ocean fields':
         defaults:  # these can be overridden for individual fields below
