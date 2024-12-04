@@ -535,6 +535,18 @@ ACCESS-ESM_CMIP6
 "ocean-2d-hblt-1monthly-max-ym%4yr%2mo", 1, "months", 1, "days", "time", 1, "years"
 "ocean_model", "hblt", "hblt", "ocean-2d-hblt-1monthly-max-ym%4yr%2mo", "all", "max", "none", 2
 
+"ocean-2d-temp_yflux_adv_int_z-1monthly-mean-ym%4yr%2mo", 1, "months", 1, "days", "time", 1, "years"
+"ocean_model", "temp_yflux_adv_int_z", "temp_yflux_adv_int_z", "ocean-2d-temp_yflux_adv_int_z-1monthly-mean-ym%4yr%2mo", "all", "average", "none", 2
+
+"ocean-2d-temp_xflux_adv_int_z-1monthly-mean-ym%4yr%2mo", 1, "months", 1, "days", "time", 1, "years"
+"ocean_model", "temp_xflux_adv_int_z", "temp_xflux_adv_int_z", "ocean-2d-temp_xflux_adv_int_z-1monthly-mean-ym%4yr%2mo", "all", "average", "none", 2
+
+"ocean-2d-salt_yflux_adv_int_z-1monthly-mean-ym%4yr%2mo", 1, "months", 1, "days", "time", 1, "years"
+"ocean_model", "salt_yflux_adv_int_z", "salt_yflux_adv_int_z", "ocean-2d-salt_yflux_adv_int_z-1monthly-mean-ym%4yr%2mo", "all", "average", "none", 2
+
+"ocean-2d-salt_xflux_adv_int_z-1monthly-mean-ym%4yr%2mo", 1, "months", 1, "days", "time", 1, "years"
+"ocean_model", "salt_xflux_adv_int_z", "salt_xflux_adv_int_z", "ocean-2d-salt_xflux_adv_int_z-1monthly-mean-ym%4yr%2mo", "all", "average", "none", 2
+
 
 # monthly 2d BGC fields
 
