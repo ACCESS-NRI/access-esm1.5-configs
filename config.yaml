@@ -65,7 +65,7 @@ submodels:
         - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/grids/global.N96/2020.05.19/qrparm.mask
         - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/grids/resolution_independent/2020.05.19/vertlevs_G3
         # STASH
-        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/stash/2020.05.19/
+        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/stash/2024.11.01
 
     - name: ocean
       model: mom
