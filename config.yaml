@@ -148,6 +148,7 @@ manifest:
   reproduce:
     exe: True
 
+payu_minimum_version: 1.1.6
 stacksize: unlimited
 qsub_flags: -W umask=027
 
