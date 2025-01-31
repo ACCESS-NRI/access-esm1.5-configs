@@ -1,8 +1,8 @@
 format: yamanifest
 version: 1.0
 ---
-work/um7.3x:
-  fullpath: /g/data/access/payu/access-esm/bin/coe/amip/um7.3x
+work/atmosphere/um_hg3.exe:
+  fullpath: /g/data/vk83/apps/spack/0.22/restricted/ukmo/release/linux-rocky8-x86_64_v4/intel-19.0.3.199/um7-git.2024.10.17_access-esm1.5-l3w5m5ub4qkaai4rqsrixyeggwvenqeg/bin/um_hg3.exe
   hashes:
-    binhash: 97d3dc01c1ca6754a5b298ec46cb8d71
-    md5: b940be586b14738d766a345fda25cc4c
+    binhash: 7d84592b11262545ecbe8a9d10f69055
+    md5: 93c8bca8d07dd29b94e0a62ffc31c4f6

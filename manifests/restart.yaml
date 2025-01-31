@@ -1,18 +1,18 @@
 format: yamanifest
 version: 1.0
 ---
-work/AM-09-t1.astart-19780101:
-  fullpath: /g/data/access/payu/access-esm/restart/amip/AM-09-t1.astart-19780101
+work/atmosphere/AM-09-t1.astart-19780101:
+  fullpath: /g/data/tm70/sw6175/development/esm1.5-amip/amip/atmosphere/AM-09-t1.astart-19780101
   hashes:
-    binhash: d7db72b3043e0d411b6681544d6efa1c
+    binhash: 6dbdd1c7fd816d3a722eb40269dfd13f
     md5: b3908a11a444cc838167cc1536d3587f
-work/restart_dump.astart:
-  fullpath: /g/data/access/payu/access-esm/restart/amip/restart_dump.astart
+work/atmosphere/restart_dump.astart:
+  fullpath: /g/data/tm70/sw6175/development/esm1.5-amip/amip/atmosphere/restart_dump.astart
   hashes:
-    binhash: 901e8b841aa25f1b73fdecd4df13b8e9
+    binhash: dce44afd3bb205c5c35072b822af2a06
     md5: 965adaffce58af9d3d2d307b7a36edc5
-work/restart_dump.astart.orig:
-  fullpath: /g/data/access/payu/access-esm/restart/amip/restart_dump.astart.orig
+work/atmosphere/restart_dump.astart.orig:
+  fullpath: /g/data/tm70/sw6175/development/esm1.5-amip/amip/atmosphere/restart_dump.astart.orig
   hashes:
-    binhash: c5efe1998d380f12976edf8cb163fb50
+    binhash: 65fd0335eb5cf18d4d2704d1bf794a26
     md5: b3908a11a444cc838167cc1536d3587f
