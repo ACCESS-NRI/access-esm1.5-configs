@@ -26,7 +26,7 @@ modules:
   use:
       - /g/data/vk83/modules
   load:
-      - access-esm1p5/2024.05.1
+      - access-esm1p5/2024.12.0
 
 # Model configuration
 model: access
@@ -34,7 +34,7 @@ model: access
 submodels:
     - name: atmosphere
       model: um
-      ncpus: 192
+      ncpus: 240
       exe: um_hg3.exe
       input:
         # Aerosols
@@ -65,7 +65,7 @@ submodels:
         - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/grids/global.N96/2020.05.19/qrparm.mask
         - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/grids/resolution_independent/2020.05.19/vertlevs_G3
         # STASH
-        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/stash/2020.05.19/
+        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/stash/2024.11.01
 
     - name: ocean
       model: mom
@@ -83,6 +83,8 @@ submodels:
         - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/ocean/shortwave_penetration/global.1deg/2020.05.19/ssw_atten_depth.nc
         # Grids
         - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/ocean/grids/mosaic/global.1deg/2020.05.19/grid_spec.nc
+        # Basin mask
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/ocean/basins/global.1deg/2020.05.19/basin_mask.nc
 
     - name: ice
       model: cice
@@ -146,6 +148,7 @@ manifest:
   reproduce:
     exe: True
 
+payu_minimum_version: 1.1.6
 stacksize: unlimited
 qsub_flags: -W umask=027
 
