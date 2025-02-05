@@ -1,6 +1,8 @@
 {
     "$schema": "https://github.com/ACCESS-NRI/schema/tree/main/au.org.access-nri/model/configuration/ci/2-0-0.json",
     "scheduled": {
+        "release-historical+concentrations-1.2": {},
+        "release-preindustrial+concentrations-1.2": {},
         "default": {
             "markers": "checksum"
         }
