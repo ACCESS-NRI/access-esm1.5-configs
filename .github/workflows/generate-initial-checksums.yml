@@ -38,6 +38,7 @@ jobs:
       commit-checksums: ${{ inputs.commit-checksums }}
       committed-checksum-location: ${{ inputs.committed-checksum-location }}
       committed-checksum-tag-version: ${{ inputs.committed-checksum-tag-version }}
+      committed-checksum-create-release: ${{ inputs.committed-checksum-create-release }}
       environment-name: "Gadi Initial Checksum"
       test-markers: ${{ inputs.test-markers }}
     permissions:
