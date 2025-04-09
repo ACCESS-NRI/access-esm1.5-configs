@@ -26,7 +26,7 @@ modules:
   use:
       - /g/data/vk83/modules
   load:
-      - access-esm1p5/2024.12.0
+      - access-esm1p5/2024.12.1
 
 # Model configuration
 model: access
