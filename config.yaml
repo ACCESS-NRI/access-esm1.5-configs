@@ -116,7 +116,7 @@ submodels:
 collate:
     enable: false
 
-restart: /g/data/vk83/configurations/inputs/access-esm1p5/modern/pre-industrial/restart/
+restart: /g/data/vk83/prerelease/configurations/inputs/access-esm1p5/modern/pre-industrial-emissions/restart/
 
 # Timing controls
 calendar:

@@ -1,9 +1,9 @@
 # preindustrial+concentrations
-Standard configuration for a coupled CO<sub>2</sub> concentration driven [ACCESS-ESM1.5](https://github.com/ACCESS-NRI/ACCESS-ESM1.5) under pre-industrial forcings.
+Standard configuration for a coupled CO<sub>2</sub> emissions driven [ACCESS-ESM1.5](https://github.com/ACCESS-NRI/ACCESS-ESM1.5) under pre-industrial forcings.
 
 For usage instructions, see the [ACCESS-Hive docs](https://access-hive.org.au/models/run-a-model/run-access-esm/)
 
-This configution is based on and maintains reproducibility with the CMIP6 configuration developed at [CSIRO](https://www.csiro.au/en/research/environmental-impacts/climate-change/climate-science-centre).
+This configuration is based on and maintains reproducibility with the CMIP6 configuration developed at [CSIRO](https://www.csiro.au/en/research/environmental-impacts/climate-change/climate-science-centre).
 
 ## Conditions of use
 
