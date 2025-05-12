@@ -24,9 +24,9 @@ jobfs: 1500MB
 # Modules for loading model executables
 modules:
   use:
-      - /g/data/vk83/modules
+      - /g/data/vk83/prerelease/modules
   load:
-      - access-esm1p5/2024.12.1
+      - access-esm1p5/pr37-2
 
 # Model configuration
 model: access
@@ -139,10 +139,12 @@ runspersub: 1
 # Misc
 restart_freq: 10YS
 
-runlog: true
+runlog: False
 manifest:
   reproduce:
-    exe: True
+    exe: False
+metadata:
+  enable: False
 
 payu_minimum_version: 1.1.6
 stacksize: unlimited
