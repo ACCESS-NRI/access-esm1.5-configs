@@ -26,7 +26,7 @@ modules:
   use:
       - /g/data/vk83/prerelease/modules
   load:
-      - access-esm1p5/pr37-3
+      - access-esm1p5/pr37-4
 
 # Model configuration
 model: access
