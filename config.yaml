@@ -26,61 +26,54 @@ modules:
   use:
       - /g/data/vk83/modules
   load:
-      - access-esm1p5/2024.12.0
+      - access-esm1p5/2024.12.1
 
 # Model configuration
 model: access
 
 submodels:
-  - name: atmosphere
-    model: um
-    ncpus: 240
-    exe: um_hg3.exe
-    input:
-      # Aerosols
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/OCFF_1849_2015_ESM1.anc
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/BC_hi_1849_2015_ESM1.anc
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/scycl_1849_2015_ESM1_v4.anc
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/Bio_1849_2015_ESM1.anc
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/aerosol/global.N96/2020.05.19/biogenic_351sm.N96L38
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/aerosol/global.N96/2020.05.19/sulpc_oxidants_N96_L38
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/aerosol/global.N96/2020.05.19/DMS_conc.N96
+    - name: atmosphere
+      model: um
+      ncpus: 240
+      exe: um_hg3.exe
+      input:
+        # Aerosols
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/OCFF_1849_2015_ESM1.anc
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/BC_hi_1849_2015_ESM1.anc
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/scycl_1849_2015_ESM1_v4.anc
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/aerosol/global.N96/2021.06.22/Bio_1849_2015_ESM1.anc
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/aerosol/global.N96/2020.05.19/biogenic_351sm.N96L38
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/aerosol/global.N96/2020.05.19/sulpc_oxidants_N96_L38
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/aerosol/global.N96/2020.05.19/DMS_conc.N96
+        # Forcing
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/forcing/global.N96/2021.06.22/ozone_1849_2015_ESM1.anc
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/forcing/resolution_independent/2021.06.22/volcts_cmip6.dat
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/forcing/resolution_independent/2021.06.22/TSI_CMIP6_ESM_v2
+        # Land
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/land/biogeochemistry/global.N96/2021.06.22/Ndep_1849_2015.anc
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/land/vegetation/global.N96/2024.07.04/cableCMIP6_LC_1850-2015.nc
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/land/vegetation/global.N96/2020.05.19/cable_vegfunc_N96.anc
+        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/land/biogeochemistry/resolution_independent/2020.05.19/modis_phenology_csiro.txt
+        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/land/biogeochemistry/resolution_independent/2020.05.19/pftlookup_csiro_v16_17tiles_wtlnds.csv
+        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/land/biogeophysics/resolution_independent/2020.05.19/def_soil_params.txt
+        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/land/biogeophysics/resolution_independent/2020.05.19/def_veg_params.txt
+        # Spectral
+        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/spectral/resolution_independent/2020.05.19/spec3a_sw_hadgem1_6on
+        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/spectral/resolution_independent/2020.05.19/spec3a_lw_hadgem1_6on
+        # STASH
+        - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/stash/2024.11.01
+        # Boundary conditions
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/amip/atmosphere/boundary_conditions/global.N96/2021.07.08/amip_seaice_n96_greg.pp
+        - /g/data/vk83/configurations/inputs/access-esm1p5/modern/amip/atmosphere/boundary_conditions/global.N96/2021.07.08/amip_sst_n96_greg.pp
 
-      # Forcing
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/forcing/global.N96/2021.06.22/ozone_1849_2015_ESM1.anc
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/forcing/resolution_independent/2021.06.22/volcts_cmip6.dat
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/forcing/resolution_independent/2021.06.22/TSI_CMIP6_ESM_v2
-
-      # Land
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/land/biogeochemistry/global.N96/2021.06.22/Ndep_1849_2015.anc
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/historical/atmosphere/land/vegetation/global.N96/2024.07.04/cableCMIP6_LC_1850-2015.nc
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/share/atmosphere/land/vegetation/global.N96/2020.05.19/cable_vegfunc_N96.anc
-      - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/land/biogeochemistry/resolution_independent/2020.05.19/modis_phenology_csiro.txt
-      - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/land/biogeochemistry/resolution_independent/2020.05.19/pftlookup_csiro_v16_17tiles_wtlnds.csv
-      - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/land/biogeophysics/resolution_independent/2020.05.19/def_soil_params.txt
-      - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/land/biogeophysics/resolution_independent/2020.05.19/def_veg_params.txt
-
-      # Spectral
-      - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/spectral/resolution_independent/2020.05.19/spec3a_sw_hadgem1_6on
-      - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/spectral/resolution_independent/2020.05.19/spec3a_lw_hadgem1_6on
-
-      # STASH
-      - /g/data/vk83/configurations/inputs/access-esm1p5/share/atmosphere/stash/2024.11.01
-
-      # Boundary conditions
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/amip/atmosphere/boundary_conditions/global.N96/2021.07.08/amip_seaice_n96_greg.pp
-      - /g/data/vk83/configurations/inputs/access-esm1p5/modern/amip/atmosphere/boundary_conditions/global.N96/2021.07.08/amip_sst_n96_greg.pp
+# Collation
+collate:
+    enable: false
 
 restart: /g/data/vk83/configurations/inputs/access-esm1p5/modern/amip/restart/2023.03.13
 
 # Timing controls
 calendar:
-    start:
-        # Check also 'MODEL_BASIS_TIME' in atmosphere namelists
-        year: 1978
-        month: 1
-        days: 1
-
     runtime:
         years: 1 # NOTE: Must be 1 year for land use changes
         months: 0
@@ -89,7 +82,7 @@ calendar:
 runspersub: 1
 
 # Misc
-restart_freq: 10
+restart_freq: 10YS
 
 runlog: true
 manifest:
@@ -109,11 +102,10 @@ sync:
 
 # If a postscript included (such as the automated netcdf conversion), the latest output and restart files will not
 # be automatically synced at the end of a run. To sync the latest output after a postscript has completed,
-#  manually run `payu sync` from the command line.
+# manually run `payu sync` from the command line.
 
 userscripts:
     # Apply land use changes after each run
     run: ./scripts/update_landuse_driver.sh
-
 
 postscript: -v PAYU_CURRENT_OUTPUT_DIR,PROJECT  -lstorage=${PBS_NCI_STORAGE} ./scripts/NetCDF-conversion/UM_conversion_job.sh
