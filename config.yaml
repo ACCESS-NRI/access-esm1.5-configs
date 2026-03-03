@@ -27,7 +27,7 @@ modules:
   - /g/data/vk83/modules
   - /g/data/vk83/prerelease/modules
   load:
-  - access-esm1p5/pr46-2
+  - access-esm1p5/pr46-3
 model: access
 
 submodels:
